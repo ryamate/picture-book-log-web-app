@@ -1,0 +1,9 @@
+# IDE
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code
+.agent_tmp/
