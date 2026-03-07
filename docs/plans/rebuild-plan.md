@@ -80,6 +80,7 @@ docs/
 | ルーティング | React Router v6 |
 | 開発環境 | Docker Compose |
 | メール(dev) | Mailpit |
+| 通知(UI) | react-hot-toast |
 
 ## アーキテクチャ方針
 
@@ -110,6 +111,38 @@ docs/
 | Family | 家族管理、子ども、招待 |
 | Bookshelf | 絵本登録・検索・本棚管理 |
 | ReadLog | 読み聞かせ記録、タグ |
+
+### コンテキスト間の Value Object 共有方針
+
+複数のコンテキストで `FamilyId`, `UserId` 等の識別子を使用する必要がある。
+
+| 方式 | 説明 |
+|---|---|
+| 各コンテキストに独自定義 | 完全な独立性。変換コストがある |
+| 共有カーネル（Shared Kernel） | 共通パッケージに ID 系 Value Object を集約 |
+| プリミティブ型で受け渡し | シンプルだが型安全性が低い |
+
+→ **共有カーネルを採用**。`packages/Shared/ValueObject/` に ID 系 Value Object（`UserId`, `FamilyId`, `ChildId`, `PictureBookId`）と汎用 Value Object（`Email`）を配置し、各コンテキストから参照する。
+
+```
+backend/packages/
+├── Shared/
+│   └── ValueObject/
+│       ├── UserId.php
+│       ├── FamilyId.php
+│       ├── ChildId.php
+│       ├── PictureBookId.php
+│       └── Email.php
+├── Auth/
+├── Family/
+├── Bookshelf/
+└── ReadLog/
+```
+
+理由:
+- ID 系 Value Object はどのコンテキストでも同一の不変条件（正の整数）を持ち、コンテキスト固有のロジックがない
+- 各コンテキストに同名クラスを重複定義するのは保守コストが高い
+- 個人開発アプリの規模では、過度なコンテキスト分離よりも実用性を優先する
 
 ## コア機能（Phase 1）
 
@@ -383,20 +416,68 @@ GET    /api/v1/tags?q={query}
 - `child_read_record` ピボットに `reaction` カラム追加（子ども毎のリアクション）
 - `family_invitations` に `expires_at` 追加
 - Phase 1不要のテーブル削除（contacts, follows, likes）
+- Phase 1不要のカラム削除（`users.role`, `users.avatar_path` は Phase 2 以降で追加）
+- `users.soft_delete` は Phase 1 では採用しない（物理削除。Phase 2 で必要に応じて導入）
 
 ### テーブル一覧
 
 | テーブル | 主なカラム |
 |---|---|
 | families | id, name |
-| users | id, family_id(nullable), name, email, password, role, avatar_path, soft_delete |
-| children | id, family_id, name, birthday |
+| users | id, family_id(nullable), name, email, password |
+| children | id, family_id, name, birthday(nullable) |
 | picture_books | id, family_id, registered_by, google_books_id, isbn, title, authors(JSON), thumbnail_url, rating(1-5), read_status, review |
 | read_records | id, picture_book_id, family_id, recorded_by, read_date, memo |
 | child_read_record | child_id, read_record_id, reaction |
 | tags | id, name(unique) |
 | read_record_tag | read_record_id, tag_id |
 | family_invitations | id, family_id, invited_by, email, token, accepted_at, expires_at |
+
+---
+
+## デプロイ構成
+
+### 方針
+
+- **フロントエンド（React SPA）**: Cloudflare Pages（無料）で静的配信
+- **バックエンド（Laravel API）+ DB（MySQL）**: ConoHa VPS 1台に Docker Compose でデプロイ
+- **SSL**: Let's Encrypt (certbot)
+- **ドメイン管理・DNS**: Cloudflare
+
+### 費用見積もり
+
+| 項目 | サービス | 費用 |
+|---|---|---|
+| VPS | ConoHa VPS 1GBプラン | 約750円/月 |
+| フロントエンド | Cloudflare Pages | 無料 |
+| SSL | Let's Encrypt | 無料 |
+| ドメイン | Cloudflare Registrar 等 | 年$10程度 |
+
+### 本番 Docker Compose 構成
+
+```
+VPS (ConoHa)
+├── docker-compose.prod.yml
+├── app        (PHP-FPM + Laravel API)
+├── web        (Nginx - リバースプロキシ + SSL終端)
+├── db         (MySQL 8.0 - ボリューム永続化)
+└── certbot    (Let's Encrypt 自動更新)
+```
+
+- 開発環境から `frontend` / `mailpit` コンテナを除外
+- Nginx に SSL (Let's Encrypt) 設定を追加
+- MySQL データはnamed volumeで永続化
+- 全コンテナに `restart: always` を設定
+- 環境変数は `.env` で管理（Git管理外）
+
+### デプロイフロー
+
+```
+[Frontend] Git push → Cloudflare Pages が自動ビルド・デプロイ
+[Backend]  Git push → VPSにSSH → git pull → docker compose -f docker-compose.prod.yml build → up -d
+```
+
+将来的に GitHub Actions で Backend のデプロイも自動化する。
 
 ---
 
