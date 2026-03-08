@@ -8,6 +8,7 @@
     "require": {
         "php": "^8.2",
         "laravel/framework": "^12.0",
+        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1"
     },
     "require-dev": {
@@ -27,7 +28,8 @@
             "Packages\\Auth\\": "packages/Auth/",
             "Packages\\Family\\": "packages/Family/",
             "Packages\\Bookshelf\\": "packages/Bookshelf/",
-            "Packages\\ReadLog\\": "packages/ReadLog/"
+            "Packages\\ReadLog\\": "packages/ReadLog/",
+            "Packages\\Shared\\": "packages/Shared/"
         }
     },
     "autoload-dev": {

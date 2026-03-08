@@ -70,9 +70,9 @@ docs/
 
 | レイヤー | 技術 |
 |---|---|
-| バックエンド | Laravel 11+ (REST API) |
+| バックエンド | Laravel 12 (REST API) |
 | アーキテクチャ | DDD + Clean Architecture + CQRS |
-| フロントエンド | React 18 + TypeScript + Vite |
+| フロントエンド | React 19 + TypeScript + Vite |
 | 認証 | Laravel Sanctum (トークンベース) |
 | DB | MySQL 8.0 |
 | データ取得 | TanStack Query (React Query) |
@@ -163,22 +163,25 @@ picture-book-log-web-app/
 ├── .env.example
 ├── Taskfile.yml
 ├── README.md
-├── backend/                        # Laravel 11 API
+├── backend/                        # Laravel 12 API
 │   ├── Dockerfile
 │   ├── app/
 │   │   ├── Http/                   # Interface層（Laravel標準）
 │   │   │   ├── Controllers/Api/
 │   │   │   ├── Requests/
 │   │   │   └── Resources/
+│   │   ├── Models/                # Eloquentモデル（Laravel標準配置）
 │   │   └── Providers/
 │   ├── packages/                   # DDD + Clean Architecture
+│   │   ├── Shared/
+│   │   │   └── ValueObject/       # UserId, FamilyId, Email 等（共有カーネル）
 │   │   ├── Auth/
 │   │   │   ├── Application/
 │   │   │   │   ├── Command/       # RegisterUser, Login, Logout
 │   │   │   │   └── Query/         # GetCurrentUser
 │   │   │   ├── Domain/
 │   │   │   │   ├── Entity/
-│   │   │   │   ├── ValueObject/   # Email, HashedPassword
+│   │   │   │   ├── ValueObject/   # UserName, HashedPassword（Auth固有）
 │   │   │   │   └── Repository/    # UserRepositoryInterface
 │   │   │   └── Infrastructure/
 │   │   │       └── Repository/    # EloquentUserRepository
@@ -216,8 +219,7 @@ picture-book-log-web-app/
 │   │       └── Infrastructure/
 │   │           └── Repository/
 │   ├── database/
-│   │   ├── migrations/
-│   │   └── Eloquent/Models/       # Eloquentモデル（Infrastructure用）
+│   │   └── migrations/
 │   ├── routes/api.php
 │   └── tests/
 ├── frontend/                       # React SPA
@@ -231,7 +233,7 @@ picture-book-log-web-app/
 │   │   └── App.tsx
 │   └── vite.config.ts
 └── infra/docker/
-    ├── php/                        # PHP 8.3 FPM
+    ├── php/                        # PHP 8.4 FPM
     ├── nginx/                      # Nginx (APIプロキシ)
     └── mysql/                      # MySQL設定
 ```
@@ -242,7 +244,7 @@ picture-book-log-web-app/
 
 | サービス | イメージ | 用途 |
 |---|---|---|
-| `app` | `php:8.3-fpm-alpine` | PHP-FPM (Laravel API) |
+| `app` | `php:8.4-fpm-alpine` | PHP-FPM (Laravel API) |
 | `web` | `nginx:1.27-alpine` | Nginx (APIプロキシ) |
 | `db` | `mysql:8.0` | データベース |
 | `frontend` | `node:20-alpine` | Vite dev server (React SPA) |
@@ -262,7 +264,7 @@ picture-book-log-web-app/
 
 ### バックエンド
 
-- Sanctum設定 (`config/sanctum.php`, `config/cors.php`)
+- Sanctum設定 (`php artisan install:api`, `config/sanctum.php`)
 - `AuthController` — register, login, logout, user
 - `RegisterRequest`, `LoginRequest` バリデーション
 - `UserResource` JSONリソース

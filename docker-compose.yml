@@ -8,11 +8,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    environment:
-      - DB_HOST=db
-      - DB_DATABASE=${DB_DATABASE:-picture_book_log}
-      - DB_USERNAME=${DB_USERNAME:-app_user}
-      - DB_PASSWORD=${DB_PASSWORD:-secret}
 
   web:
     image: nginx:1.27-alpine

@@ -22,11 +22,18 @@ Auth コンテキストを DDD + Clean Architecture + CQRS の構成で実装す
 
 ### 作業内容
 
+Laravel 12 では `install:api` Artisan コマンドで Sanctum のセットアップを一括で行う:
+
 ```bash
-docker compose exec app composer require laravel/sanctum
-docker compose exec app php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+docker compose exec app php artisan install:api
 docker compose exec app php artisan migrate
 ```
+
+`install:api` が行うこと:
+- `laravel/sanctum` の composer require
+- `config/sanctum.php` の公開
+- `personal_access_tokens` マイグレーションの作成
+- `routes/api.php` への API ルート設定（既存の `api.php` がある場合は確認が入る）
 
 ### 設定ファイル
 
@@ -34,21 +41,10 @@ docker compose exec app php artisan migrate
 - `stateful` ドメインの設定は不要（SPA Cookie 認証ではなくトークンベースを使用）
 - トークンの有効期限: `'expiration' => null`（無期限、ログアウトで明示的に削除）
 
-**`config/cors.php`**:
-```php
-return [
-    'paths' => ['api/*'],
-    'allowed_origins' => [env('FRONTEND_URL', 'http://localhost:5173')],
-    'allowed_methods' => ['*'],
-    'allowed_headers' => ['*'],
-    'supports_credentials' => true,
-];
-```
-
-**`backend/.env` に追加**:
-```env
-FRONTEND_URL=http://localhost:5173
-```
+**CORS について**:
+- Laravel 11+ では `config/cors.php` はデフォルトで存在しない
+- 開発環境では Vite の proxy（`/api → http://web:80`）経由でアクセスするため同一オリジンとなり、CORS 設定は不要
+- 本番環境（Cloudflare Pages → ConoHa VPS）の CORS 対応はデプロイ時（Step 7 以降）に `bootstrap/app.php` のミドルウェアで設定する
 
 ### 設計判断: SPA Cookie 認証 vs トークンベース
 
@@ -75,24 +71,37 @@ Sanctum には 2 つの認証方式がある:
 
 ### ディレクトリ構成
 
+rebuild-plan の Shared Kernel 方針に従い、`UserId` と `Email` は `packages/Shared/ValueObject/` に配置する。Auth コンテキスト固有の Value Object（`UserName`, `HashedPassword`）のみ `packages/Auth/` に配置する。
+
 ```
-backend/packages/Auth/
-├── Domain/
-│   ├── Entity/
-│   │   └── User.php              # ドメインエンティティ
-│   ├── ValueObject/
-│   │   ├── UserId.php
-│   │   ├── Email.php
-│   │   ├── UserName.php
-│   │   └── HashedPassword.php
-│   └── Repository/
-│       └── UserRepositoryInterface.php
+backend/packages/
+├── Shared/
+│   └── ValueObject/
+│       ├── UserId.php             # 共有カーネル（他コンテキストでも使用）
+│       └── Email.php              # 共有カーネル（他コンテキストでも使用）
+└── Auth/
+    ├── Domain/
+    │   ├── Entity/
+    │   │   └── User.php              # ドメインエンティティ
+    │   ├── ValueObject/
+    │   │   ├── UserName.php           # Auth コンテキスト固有
+    │   │   └── HashedPassword.php     # Auth コンテキスト固有
+    │   └── Repository/
+    │       └── UserRepositoryInterface.php
+```
+
+**注意**: `composer.json` の autoload に `Packages\Shared\` の追加が必要:
+```json
+"Packages\\Shared\\": "packages/Shared/"
 ```
 
 ### Domain Entity: `User`
 
 ```php
 namespace Packages\Auth\Domain\Entity;
+
+use Packages\Shared\ValueObject\UserId;
+use Packages\Shared\ValueObject\Email;
 
 final class User
 {
@@ -110,10 +119,17 @@ final class User
 
 ### Value Objects
 
+**Shared Kernel（`packages/Shared/ValueObject/`）**:
+
+| クラス | バリデーション | 備考 |
+|---|---|---|
+| `UserId` | 正の整数 | Family, Bookshelf 等でも使用 |
+| `Email` | メール形式（`filter_var`） | Family（招待）等でも使用 |
+
+**Auth コンテキスト固有（`packages/Auth/Domain/ValueObject/`）**:
+
 | クラス | バリデーション |
 |---|---|
-| `UserId` | 正の整数 |
-| `Email` | メール形式（`filter_var`） |
 | `UserName` | 1〜255文字 |
 | `HashedPassword` | bcrypt ハッシュ済み文字列をラップ |
 
@@ -121,6 +137,8 @@ final class User
 
 ```php
 namespace Packages\Auth\Domain\Repository;
+
+use Packages\Shared\ValueObject\Email;
 
 interface UserRepositoryInterface
 {
@@ -134,6 +152,7 @@ interface UserRepositoryInterface
 - **Value Object のバリデーション**: コンストラクタで不変条件を検証し、不正な値は `InvalidArgumentException` をスロー。Laravel の FormRequest バリデーションとは別に、ドメイン層でも最低限の検証を行う
 - **HashedPassword**: 平文パスワードは Domain 層に持ち込まない。ハッシュ化は Application 層（Command Handler）で行い、Domain には HashedPassword として渡す
 - **User Entity の ID**: 登録時は DB 採番前なので `UserId` は nullable にするか、`createNew` では ID なしで生成し `save` 後に ID 付きで返す設計にする
+- **Shared Kernel**: `UserId`, `Email` は rebuild-plan の方針通り共有カーネルに配置。Step 3 以降で他コンテキストから参照する際に移動・重複が発生しない
 
 ---
 
@@ -406,7 +425,9 @@ Route::prefix('v1/auth')->group(function () {
 
 ### `app/Models/User.php`
 
-Laravel デフォルトの User モデルに Sanctum の `HasApiTokens` トレイトを追加:
+Laravel デフォルトの User モデルに Sanctum の `HasApiTokens` トレイトを追加する。
+
+また、既存の `casts()` メソッドから `'password' => 'hashed'` を削除する。このキャストが有効だと Eloquent が `password` 属性セット時に自動的にハッシュ化するため、Application 層で `Hash::make()` した値が二重ハッシュされてしまう。パスワードのハッシュ化は Application 層（RegisterUserHandler）で明示的に行う。
 
 ```php
 use Laravel\Sanctum\HasApiTokens;
@@ -425,6 +446,14 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            // 'password' => 'hashed' は削除。ハッシュ化は Application 層で行う
+        ];
+    }
 }
 ```
 
@@ -465,8 +494,8 @@ backend/tests/Feature/
 | # | テストケース | 期待結果 |
 |---|---|---|
 | 1 | 正しい認証情報でログイン | 200, user + token 返却 |
-| 2 | メールアドレスが存在しない | 401 or 422 |
-| 3 | パスワード不一致 | 401 or 422 |
+| 2 | メールアドレスが存在しない | 401（認証失敗） |
+| 3 | パスワード不一致 | 401（認証失敗） |
 
 **LogoutTest**:
 | # | テストケース | 期待結果 |
@@ -493,8 +522,9 @@ backend/tests/Feature/
 
 ```bash
 docker compose exec frontend npm install axios react-router-dom react-hook-form
-docker compose exec frontend npm install -D @types/react-router-dom
 ```
+
+> `react-router-dom` v6+ は TypeScript 型定義が内蔵されているため `@types/react-router-dom` は不要。
 
 | パッケージ | 用途 |
 |---|---|
@@ -680,9 +710,9 @@ const ProtectedRoute = ({ children }: { children: ReactNode }) => {
 ## 作業順序まとめ
 
 ```
-2-1.  Sanctum セットアップ (composer, config, migrate)
+2-1.  Sanctum セットアップ (install:api, migrate)
          ↓
-2-2.  Domain 層 (Entity, ValueObject, RepositoryInterface)
+2-2.  Domain 層 (Shared ValueObject, Entity, Auth ValueObject, RepositoryInterface)
          ↓
 2-3.  Application 層 (Command/Query Handler)
          ↓
