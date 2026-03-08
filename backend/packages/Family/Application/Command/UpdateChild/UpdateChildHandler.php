@@ -20,6 +20,10 @@ final class UpdateChildHandler
     {
         $child = $this->childRepository->findById(new ChildId($command->childId));
 
+        if ($child === null) {
+            throw new \RuntimeException("Child not found: {$command->childId}");
+        }
+
         $child->update(
             new ChildName($command->name),
             $command->birthday ? new Birthday($command->birthday) : null,

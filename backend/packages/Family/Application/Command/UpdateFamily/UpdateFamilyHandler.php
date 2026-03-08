@@ -19,6 +19,10 @@ final class UpdateFamilyHandler
     {
         $family = $this->familyRepository->findById(new FamilyId($command->familyId));
 
+        if ($family === null) {
+            throw new \RuntimeException("Family not found: {$command->familyId}");
+        }
+
         $family->rename(new FamilyName($command->name));
 
         return $this->familyRepository->save($family);
