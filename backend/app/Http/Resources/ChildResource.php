@@ -2,22 +2,20 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class UserResource extends JsonResource
+class ChildResource extends JsonResource
 {
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'email' => $this->email,
-            'family_id' => $this->family_id,
-            'created_at' => $this->created_at->toISOString(),
+            'birthday' => $this->birthday?->format('Y-m-d'),
+            'age' => $this->birthday ? $this->birthday->age : null,
         ];
     }
 }

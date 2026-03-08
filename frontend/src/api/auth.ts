@@ -4,6 +4,7 @@ export interface User {
   id: number;
   name: string;
   email: string;
+  family_id: number | null;
   created_at: string;
 }
 
