@@ -30,7 +30,7 @@ class ChildController extends Controller
 
     public function store(StoreChildRequest $request, Family $family, AddChildHandler $handler)
     {
-        $this->authorize('view', $family);
+        $this->authorize('update', $family);
 
         $child = $handler->handle(new AddChildCommand(
             familyId: $family->id,
