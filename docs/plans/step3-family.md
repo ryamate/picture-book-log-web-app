@@ -102,6 +102,8 @@ backend/packages/Family/
 │       └── ChildRepositoryInterface.php
 ```
 
+> **注記**: 既存スケルトンに `Domain/Service/` と `Infrastructure/Mail/` ディレクトリが存在するが、Step 3 では使用しない。不要であれば作業中に削除する。
+
 ### Domain Entity: `Family`
 
 ```php
@@ -280,11 +282,11 @@ final class CreateFamilyCommand
 
 ### Query ハンドラ（CQRS Query 側）
 
-Query ハンドラは Eloquent を直接使い、Domain 層を経由しない:
+Query ハンドラは Eloquent を直接使い、Domain 層を経由しない（FQCN は `App\Models` 名前空間の Eloquent Model を使用）:
 
-- **GetFamilyHandler**: `Family::find($id)` → DTO or Eloquent Model
-- **ListMembersHandler**: `User::where('family_id', $id)->get()` → Collection
-- **ListChildrenHandler**: `Child::where('family_id', $id)->get()` → Collection
+- **GetFamilyHandler**: `\App\Models\Family::find($id)` → Eloquent Model
+- **ListMembersHandler**: `\App\Models\User::where('family_id', $id)->get()` → Collection
+- **ListChildrenHandler**: `\App\Models\Child::where('family_id', $id)->get()` → Collection
 
 ### 設計判断: CreateFamily 時の User.family_id 更新
 
@@ -295,7 +297,7 @@ Query ハンドラは Eloquent を直接使い、Domain 層を経由しない:
 | Handler 内で直接 User を更新 | シンプルだが、コンテキスト間の結合が生まれる |
 | ドメインイベント発行 | 疎結合だが、Phase 1 では過剰 |
 
-→ **Handler 内で直接更新を採用**。Eloquent Model 経由で `$user->update(['family_id' => $family->id()])` を呼ぶ。コンテキスト間の依存は意識しつつ、Phase 1 ではシンプルさを優先する。
+→ **Handler 内で直接更新を採用**。`CreateFamilyHandler` のコンストラクタで `FamilyRepositoryInterface` に加えて `\App\Models\User`（Eloquent Model）を直接利用し、`\App\Models\User::findOrFail($userId)->update(['family_id' => $family->id()->value()])` で更新する。Auth コンテキストの `UserRepositoryInterface` は経由しない（family_id 更新メソッドが存在しないため）。コンテキスト間の依存は意識しつつ、Phase 1 ではシンプルさを優先する。
 
 ---
 
@@ -424,7 +426,7 @@ public function family(): BelongsTo
 
 ---
 
-## 3-6. Interface 層 — Controller, Request, Resource, Routes
+## 3-6. Interface 層 — Controller, Request, Resource, Routes, UserResource 拡張
 
 ### ディレクトリ構成
 
@@ -439,6 +441,7 @@ backend/app/Http/
 │   ├── StoreChildRequest.php
 │   └── UpdateChildRequest.php
 └── Resources/
+    ├── UserResource.php      ← 既存（family_id 追加）
     ├── FamilyResource.php
     ├── MemberResource.php
     └── ChildResource.php
@@ -484,7 +487,14 @@ class ChildController extends Controller
 
 ### FormRequest バリデーション
 
-**`StoreFamilyRequest`** / **`UpdateFamilyRequest`**:
+**`StoreFamilyRequest`**:
+| フィールド | ルール |
+|---|---|
+| `name` | `required`, `string`, `max:255` |
+
+`authorize()` メソッドで `return $this->user()->family_id === null;` を返す。既に家族に所属しているユーザーの場合は 403 を返却する。
+
+**`UpdateFamilyRequest`**:
 | フィールド | ルール |
 |---|---|
 | `name` | `required`, `string`, `max:255` |
@@ -546,6 +556,23 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
 ```
 
 全エンドポイントに `auth:sanctum` ミドルウェアを適用。
+
+### UserResource の拡張（Step 2 からの変更）
+
+Step 2 で作成した `UserResource` に `family_id` を追加する。フロントエンドで `user.family_id` の有無により家族未所属判定を行うため、このタイミングで対応する。
+
+```php
+public function toArray(Request $request): array
+{
+    return [
+        'id' => $this->id,
+        'name' => $this->name,
+        'email' => $this->email,
+        'family_id' => $this->family_id,
+        'created_at' => $this->created_at->toISOString(),
+    ];
+}
+```
 
 ---
 
@@ -631,7 +658,7 @@ backend/tests/Feature/
 | 1 | 正常に家族を作成 | 201, 作成者の family_id が設定される |
 | 2 | 未認証でアクセス | 401 |
 | 3 | name が空 | 422 |
-| 4 | すでに家族に所属しているユーザーが作成 | 422 or 403（要検討） |
+| 4 | すでに家族に所属しているユーザーが作成 | 403（StoreFamilyRequest の authorize で拒否） |
 
 **UpdateFamilyTest**:
 | # | テストケース | 期待結果 |
@@ -756,10 +783,11 @@ export const useFamily = (familyId: number) => {
 
 export const useCreateFamily = () => {
   const queryClient = useQueryClient();
+  const { refreshUser } = useAuth();  // AuthContext から refreshUser を取得
   return useMutation({
     mutationFn: createFamily,
-    onSuccess: () => {
-      // AuthContext の user 情報を再取得（family_id が更新されるため）
+    onSuccess: async () => {
+      await refreshUser();  // family_id が更新されるため user 情報を再取得
     },
   });
 };
@@ -802,19 +830,74 @@ export const useAddChild = (familyId: number) => {
 
 ## 3-12. フロントエンド — ページコンポーネント
 
+### 前提: useAuth への refreshUser 追加
+
+Step 2 の `useAuth` フックには user 情報の再取得手段がない。家族作成後に `family_id` を反映するため、`refreshUser` メソッドを追加する:
+
+```typescript
+// src/hooks/useAuth.tsx に追加
+const refreshUser = useCallback(async () => {
+  const res = await authApi.getUser();
+  setUser(res.data.user);
+}, []);
+
+// Provider の value に refreshUser を追加
+<AuthContext.Provider value={{ user, isLoading, login, register, logout, refreshUser }}>
+```
+
+### 前提: フロントエンド User 型に family_id を追加
+
+`src/api/auth.ts` の `User` 型に `family_id` フィールドを追加する:
+
+```typescript
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  family_id: number | null;  // 追加
+  created_at: string;
+}
+```
+
 ### ルーティング構成（Step 2 からの追加）
 
+`ProtectedRoute`（認証チェック）と `RequireFamilyRoute`（家族所属チェック）を分離する:
+
+```
+src/components/
+├── ProtectedRoute.tsx        ← 既存（認証のみ、変更なし）
+└── RequireFamilyRoute.tsx    ← 新規（家族所属チェック）
+```
+
+**`RequireFamilyRoute`**:
+```typescript
+export default function RequireFamilyRoute({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
+
+  if (!user?.family_id) {
+    return <Navigate to="/family/create" replace />;
+  }
+
+  return <>{children}</>;
+}
+```
+
+**ルーティング定義（`App.tsx`）**:
 ```typescript
 <Routes>
   {/* 公開ルート */}
   <Route path="/login" element={<LoginPage />} />
   <Route path="/register" element={<RegisterPage />} />
 
-  {/* 保護ルート */}
+  {/* 認証必須・家族未所属でもアクセス可 */}
   <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
-    <Route path="/" element={<DashboardPage />} />
     <Route path="/family/create" element={<CreateFamilyPage />} />
-    <Route path="/family/settings" element={<FamilySettingsPage />} />
+
+    {/* 認証必須 + 家族所属必須 */}
+    <Route element={<RequireFamilyRoute><Outlet /></RequireFamilyRoute>}>
+      <Route path="/" element={<DashboardPage />} />
+      <Route path="/family/settings" element={<FamilySettingsPage />} />
+    </Route>
   </Route>
 </Routes>
 ```
@@ -824,12 +907,13 @@ export const useAddChild = (familyId: number) => {
 ログイン後のフロー:
 
 ```
-ログイン → user.family_id をチェック
-  ├─ family_id あり → DashboardPage（通常表示）
-  └─ family_id なし → CreateFamilyPage にリダイレクト
+ログイン → ProtectedRoute（認証チェック）
+  └─ RequireFamilyRoute（家族所属チェック）
+       ├─ family_id あり → DashboardPage（通常表示）
+       └─ family_id なし → /family/create にリダイレクト
 ```
 
-実装方法: `ProtectedRoute` 内で `user.family_id` を確認し、未設定なら `/family/create` へリダイレクト。ただし `/family/create` 自身ではリダイレクトしない（無限ループ防止）。
+`/family/create` は `ProtectedRoute` の内側・`RequireFamilyRoute` の外側に配置するため、無限ループは発生しない。
 
 ### CreateFamilyPage
 
@@ -868,28 +952,7 @@ Step 2 のプレースホルダーから拡張:
 
 ---
 
-## 3-13. UserResource の拡張
-
-Step 2 で作成した `UserResource` に `family_id` を追加:
-
-```php
-public function toArray($request): array
-{
-    return [
-        'id' => $this->id,
-        'name' => $this->name,
-        'email' => $this->email,
-        'family_id' => $this->family_id,
-        'created_at' => $this->created_at->toISOString(),
-    ];
-}
-```
-
-フロントエンドで `user.family_id` の有無により家族未所属判定を行うため。
-
----
-
-## 3-14. 疎通確認チェックリスト
+## 3-13. 疎通確認チェックリスト
 
 | # | 確認項目 | 方法 | 期待結果 |
 |---|---|---|---|
@@ -900,10 +963,10 @@ public function toArray($request): array
 | 5 | メンバー一覧 | `curl .../families/{id}/members` | 200, メンバーリスト |
 | 6 | 子ども一覧 | `curl .../families/{id}/children` | 200, 子どもリスト |
 | 7 | 子ども登録 | `curl -X POST .../families/{id}/children` | 201 |
-| 7 | 子ども更新 | `curl -X PUT .../families/{id}/children/{childId}` | 200 |
-| 8 | 子ども削除 | `curl -X DELETE .../families/{id}/children/{childId}` | 200 or 204 |
+| 8 | 子ども更新 | `curl -X PUT .../families/{id}/children/{childId}` | 200 |
+| 9 | 子ども削除 | `curl -X DELETE .../families/{id}/children/{childId}` | 200 or 204 |
 | 10 | 認可: 他家族へのアクセス | 所属していない family_id でアクセス | 403 |
-| 11 | 既所属ユーザーの家族作成 | 既に家族に所属しているユーザーで POST /families | 403 or 422 |
+| 11 | 既所属ユーザーの家族作成 | 既に家族に所属しているユーザーで POST /families | 403（StoreFamilyRequest の authorize で拒否） |
 | 12 | React 家族作成フロー | 未所属ユーザーでログイン → 家族作成ページ表示 → 作成 | ダッシュボードに遷移 |
 | 13 | React 子ども管理 | 家族設定ページで追加・編集・削除 | 各操作が反映される |
 | 14 | Feature テスト | `task test` | 全テスト通過 |
@@ -923,7 +986,7 @@ public function toArray($request): array
          ↓
 3-5.  Eloquent Model (Family, Child, User リレーション追加)
          ↓
-3-6.  Interface 層 (Controller, Request, Resource, Routes)
+3-6.  Interface 層 (Controller, Request, Resource, Routes, UserResource 拡張)
          ↓
 3-7.  認可 (FamilyPolicy, ChildPolicy)
          ↓
@@ -935,11 +998,10 @@ public function toArray($request): array
          ↓
 3-11. カスタムフック (useFamily, useChildren)
          ↓
-3-12. ページコンポーネント (CreateFamily, FamilySettings, Dashboard更新)
+3-12. ページコンポーネント (useAuth 拡張, User 型更新, RequireFamilyRoute,
+      CreateFamily, FamilySettings, Dashboard更新)
          ↓
-3-13. UserResource 拡張 (family_id 追加)
-         ↓
-3-14. 疎通確認チェックリスト実行
+3-13. 疎通確認チェックリスト実行
 ```
 
 ---
@@ -948,7 +1010,10 @@ public function toArray($request): array
 
 - **ユーザーと家族の関係**: 1対1（`users.family_id`）を採用。Phase 1 では複数家族所属のユースケースがない
 - **role カラム**: Step 3 では追加しない。認可は「家族に所属しているか」のみで判定
-- **すでに家族に所属しているユーザーの家族作成**: 403 を返す or バリデーションエラーとする。Phase 1 では家族脱退機能は提供しない
-- **CreateFamily 時の User 更新**: Handler 内で直接 Eloquent Model 経由で更新。ドメインイベントは Phase 1 では採用しない
+- **すでに家族に所属しているユーザーの家族作成**: `StoreFamilyRequest` の `authorize()` で `$this->user()->family_id === null` をチェックし、所属済みなら 403 を返す。Phase 1 では家族脱退機能は提供しない
+- **CreateFamily 時の User 更新**: Handler 内で `\App\Models\User` Eloquent Model を直接利用して更新。Auth コンテキストの `UserRepositoryInterface` は経由しない。ドメインイベントは Phase 1 では採用しない
+- **useAuth の拡張**: `refreshUser` メソッドを追加し、家族作成後の `family_id` 反映に使用する
+- **ProtectedRoute と RequireFamilyRoute の分離**: 認証チェック（ProtectedRoute）と家族所属チェック（RequireFamilyRoute）を別コンポーネントとし、`/family/create` は認証のみ必須・家族未所属でもアクセス可能にする
+- **フロントエンド User 型**: `api/auth.ts` の `User` インターフェースに `family_id: number | null` を追加する
 - **TanStack Query の導入**: Step 3 から導入。Step 2 の認証系フック（useAuth）は既存の useEffect ベースを維持し、Step 3 以降の CRUD 操作で TanStack Query を活用
 - **子ども削除時の影響**: Step 5 で `child_read_record` テーブルが追加された後は、子ども削除時に関連する読み聞かせ記録への影響を考慮する必要がある。Step 3 時点では単純削除で問題ない
