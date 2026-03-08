@@ -1,0 +1,67 @@
+version: '3'
+
+tasks:
+  up:
+    desc: 全コンテナを起動
+    cmds:
+      - docker compose up -d
+
+  down:
+    desc: 全コンテナを停止
+    cmds:
+      - docker compose down
+
+  restart:
+    desc: 全コンテナを再起動
+    cmds:
+      - docker compose restart
+
+  logs:
+    desc: ログ表示
+    cmds:
+      - docker compose logs -f {{.CLI_ARGS}}
+
+  ps:
+    desc: コンテナ状態確認
+    cmds:
+      - docker compose ps
+
+  artisan:
+    desc: php artisan コマンド実行
+    cmds:
+      - docker compose exec app php artisan {{.CLI_ARGS}}
+
+  migrate:
+    desc: マイグレーション実行
+    cmds:
+      - docker compose exec app php artisan migrate
+
+  seed:
+    desc: シーダー実行
+    cmds:
+      - docker compose exec app php artisan db:seed
+
+  fresh:
+    desc: DBリセット + マイグレーション + シーダー
+    cmds:
+      - docker compose exec app php artisan migrate:fresh --seed
+
+  test:
+    desc: PHPUnit テスト実行
+    cmds:
+      - docker compose exec app php artisan test
+
+  composer:
+    desc: Composer コマンド実行
+    cmds:
+      - docker compose exec app composer {{.CLI_ARGS}}
+
+  npm:
+    desc: npm コマンド実行（frontend コンテナ）
+    cmds:
+      - docker compose exec frontend npm {{.CLI_ARGS}}
+
+  shell:
+    desc: app コンテナに入る
+    cmds:
+      - docker compose exec app sh
