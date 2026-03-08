@@ -81,6 +81,9 @@ docs/
 | 開発環境 | Docker Compose |
 | メール(dev) | Mailpit |
 | 通知(UI) | react-hot-toast |
+| CSS | Tailwind CSS |
+| UIコンポーネント | Shadcn/ui |
+| デザインシステム | Tailwind デフォルト + 最小限のカスタム（ブランドカラー程度） |
 
 ## アーキテクチャ方針
 
