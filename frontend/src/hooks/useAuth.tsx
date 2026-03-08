@@ -58,8 +58,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const refreshUser = useCallback(async () => {
-    const res = await authApi.getUser();
-    setUser(res.data.user);
+    try {
+      const res = await authApi.getUser();
+      setUser(res.data.user);
+    } catch {
+      // user情報の再取得に失敗しても致命的ではない
+      // 次のページ遷移時に再取得される
+    }
   }, []);
 
   return (
