@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Child } from '../api/family';
 import ChildForm from './ChildForm';
+import { Button } from '@/components/ui/button';
 
 interface ChildCardProps {
   child: Child;
@@ -24,7 +25,7 @@ export default function ChildCard({ child, onUpdate, onRemove }: ChildCardProps)
 
   if (isEditing) {
     return (
-      <div style={{ padding: 12, border: '1px solid #ddd', borderRadius: 8, marginBottom: 8 }}>
+      <div className="rounded-lg border p-3">
         <ChildForm
           defaultValues={{ name: child.name, birthday: child.birthday ?? undefined }}
           onSubmit={handleUpdate}
@@ -36,15 +37,23 @@ export default function ChildCard({ child, onUpdate, onRemove }: ChildCardProps)
   }
 
   return (
-    <div style={{ padding: 12, border: '1px solid #ddd', borderRadius: 8, marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <div>
-        <strong>{child.name}</strong>
-        {child.age !== null && <span style={{ marginLeft: 8, color: '#666' }}>({child.age}歳)</span>}
-        {child.birthday && <span style={{ marginLeft: 8, color: '#999', fontSize: 12 }}>{child.birthday}</span>}
+    <div className="flex items-center justify-between rounded-lg border p-3">
+      <div className="flex items-baseline gap-2">
+        <span className="font-medium">{child.name}</span>
+        {child.age !== null && (
+          <span className="text-sm text-muted-foreground">({child.age}歳)</span>
+        )}
+        {child.birthday && (
+          <span className="text-xs text-muted-foreground">{child.birthday}</span>
+        )}
       </div>
-      <div style={{ display: 'flex', gap: 8 }}>
-        <button onClick={() => setIsEditing(true)}>編集</button>
-        <button onClick={handleRemove} style={{ color: 'red' }}>削除</button>
+      <div className="flex gap-2">
+        <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)}>
+          編集
+        </Button>
+        <Button variant="ghost" size="sm" className="text-destructive" onClick={handleRemove}>
+          削除
+        </Button>
       </div>
     </div>
   );

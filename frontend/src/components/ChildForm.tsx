@@ -1,4 +1,7 @@
 import { useForm } from 'react-hook-form';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface ChildFormData {
   name: string;
@@ -28,26 +31,19 @@ export default function ChildForm({ defaultValues, onSubmit, onCancel, submitLab
   };
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} style={{ display: 'flex', gap: 8, alignItems: 'flex-end', flexWrap: 'wrap' }}>
-      <div>
-        <label>名前</label>
-        <input
-          {...register('name', { required: '名前は必須です' })}
-          style={{ display: 'block', padding: '6px 8px' }}
-        />
-        {errors.name && <span style={{ color: 'red', fontSize: 12 }}>{errors.name.message}</span>}
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="flex flex-wrap items-end gap-3">
+      <div className="space-y-1">
+        <Label>名前</Label>
+        <Input {...register('name', { required: '名前は必須です' })} />
+        {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
       </div>
-      <div>
-        <label>誕生日</label>
-        <input
-          type="date"
-          {...register('birthday')}
-          style={{ display: 'block', padding: '6px 8px' }}
-        />
+      <div className="space-y-1">
+        <Label>誕生日</Label>
+        <Input type="date" {...register('birthday')} />
       </div>
-      <button type="submit" style={{ padding: '6px 16px' }}>{submitLabel}</button>
+      <Button type="submit" size="sm">{submitLabel}</Button>
       {onCancel && (
-        <button type="button" onClick={onCancel} style={{ padding: '6px 16px' }}>キャンセル</button>
+        <Button type="button" variant="outline" size="sm" onClick={onCancel}>キャンセル</Button>
       )}
     </form>
   );

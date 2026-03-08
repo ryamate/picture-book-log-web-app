@@ -1,5 +1,6 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { Button } from '@/components/ui/button';
 
 export default function AppLayout() {
   const { user, logout } = useAuth();
@@ -11,23 +12,17 @@ export default function AppLayout() {
   };
 
   return (
-    <div>
-      <header
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '12px 24px',
-          borderBottom: '1px solid #ddd',
-        }}
-      >
-        <h2 style={{ margin: 0 }}>絵本ログ</h2>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <span>{user?.name}</span>
-          <button onClick={handleLogout}>ログアウト</button>
+    <div className="min-h-screen">
+      <header className="flex items-center justify-between border-b px-6 py-3">
+        <h2 className="text-lg font-semibold">絵本ログ</h2>
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-muted-foreground">{user?.name}</span>
+          <Button variant="ghost" size="sm" onClick={handleLogout}>
+            ログアウト
+          </Button>
         </div>
       </header>
-      <main style={{ padding: 24 }}>
+      <main className="mx-auto max-w-4xl px-6 py-6">
         <Outlet />
       </main>
     </div>

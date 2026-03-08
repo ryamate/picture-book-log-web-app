@@ -2,6 +2,10 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useCreateFamily } from '../hooks/useFamily';
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 interface FormData {
   name: string;
@@ -24,28 +28,31 @@ export default function CreateFamilyPage() {
   };
 
   return (
-    <div style={{ maxWidth: 400, margin: '0 auto' }}>
-      <h1>家族を作成</h1>
-      <p>絵本ログを始めるには、まず家族を作成してください。</p>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div style={{ marginBottom: 16 }}>
-          <label style={{ display: 'block', marginBottom: 4 }}>家族名</label>
-          <input
-            {...register('name', { required: '家族名は必須です' })}
-            placeholder="例: 山田家"
-            style={{ width: '100%', padding: '8px 12px', boxSizing: 'border-box' }}
-          />
-          {errors.name && <span style={{ color: 'red', fontSize: 12 }}>{errors.name.message}</span>}
-        </div>
-        <button
-          type="submit"
-          disabled={createFamily.isPending}
-          style={{ width: '100%', padding: '10px', cursor: 'pointer' }}
-        >
-          {createFamily.isPending ? '作成中...' : '家族を作成'}
-        </button>
-      </form>
+    <div className="flex min-h-[60vh] items-center justify-center px-4">
+      <Card className="w-full max-w-sm">
+        <CardHeader>
+          <CardTitle className="text-2xl">家族を作成</CardTitle>
+          <CardDescription>絵本ログを始めるには、まず家族を作成してください。</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {error && <p className="mb-4 text-sm text-destructive">{error}</p>}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div className="space-y-2">
+              <Label>家族名</Label>
+              <Input
+                {...register('name', { required: '家族名は必須です' })}
+                placeholder="例: 山田家"
+              />
+              {errors.name && (
+                <p className="text-xs text-destructive">{errors.name.message}</p>
+              )}
+            </div>
+            <Button type="submit" className="w-full" disabled={createFamily.isPending}>
+              {createFamily.isPending ? '作成中...' : '家族を作成'}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }
