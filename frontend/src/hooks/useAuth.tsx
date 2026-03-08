@@ -1,0 +1,72 @@
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  type ReactNode,
+} from 'react';
+import * as authApi from '../api/auth';
+import type { User, LoginData, RegisterData } from '../api/auth';
+
+interface AuthContextType {
+  user: User | null;
+  isLoading: boolean;
+  login: (data: LoginData) => Promise<void>;
+  register: (data: RegisterData) => Promise<void>;
+  logout: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      authApi
+        .getUser()
+        .then((res) => setUser(res.data.user))
+        .catch(() => {
+          localStorage.removeItem('auth_token');
+        })
+        .finally(() => setIsLoading(false));
+    } else {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const login = useCallback(async (data: LoginData) => {
+    const res = await authApi.login(data);
+    localStorage.setItem('auth_token', res.data.token);
+    setUser(res.data.user);
+  }, []);
+
+  const register = useCallback(async (data: RegisterData) => {
+    const res = await authApi.register(data);
+    localStorage.setItem('auth_token', res.data.token);
+    setUser(res.data.user);
+  }, []);
+
+  const logout = useCallback(async () => {
+    await authApi.logout();
+    localStorage.removeItem('auth_token');
+    setUser(null);
+  }, []);
+
+  return (
+    <AuthContext.Provider value={{ user, isLoading, login, register, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth(): AuthContextType {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}
