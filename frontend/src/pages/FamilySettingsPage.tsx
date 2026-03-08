@@ -27,6 +27,7 @@ export default function FamilySettingsPage() {
       <section style={{ marginBottom: 32 }}>
         <h2>家族名</h2>
         <FamilyNameForm
+          key={family.name}
           currentName={family.name}
           onSubmit={(name) => updateFamily.mutate({ name })}
           isPending={updateFamily.isPending}
