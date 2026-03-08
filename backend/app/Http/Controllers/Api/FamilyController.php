@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateFamilyRequest;
 use App\Http\Resources\FamilyResource;
 use App\Http\Resources\MemberResource;
 use App\Models\Family;
+use Illuminate\Support\Facades\DB;
 use Packages\Family\Application\Command\CreateFamily\CreateFamilyCommand;
 use Packages\Family\Application\Command\CreateFamily\CreateFamilyHandler;
 use Packages\Family\Application\Command\UpdateFamily\UpdateFamilyCommand;
@@ -21,14 +22,16 @@ class FamilyController extends Controller
 {
     public function store(StoreFamilyRequest $request, CreateFamilyHandler $handler)
     {
-        $family = $handler->handle(new CreateFamilyCommand(
-            name: $request->validated('name'),
-            userId: $request->user()->id,
-        ));
+        return DB::transaction(function () use ($request, $handler) {
+            $family = $handler->handle(new CreateFamilyCommand(
+                name: $request->validated('name'),
+                userId: $request->user()->id,
+            ));
 
-        $eloquentFamily = Family::find($family->id()->value());
+            $eloquentFamily = Family::find($family->id()->value());
 
-        return (new FamilyResource($eloquentFamily))->response()->setStatusCode(201);
+            return (new FamilyResource($eloquentFamily))->response()->setStatusCode(201);
+        });
     }
 
     public function show(Family $family, GetFamilyHandler $handler)
