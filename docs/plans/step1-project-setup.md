@@ -10,7 +10,7 @@ Docker Compose で Laravel API + React SPA + MySQL + Nginx + Mailpit が起動�
 - [ ] `curl http://localhost:8080/api/health` で Laravel API から JSON レスポンスが返る
 - [ ] `http://localhost:5173` で React の初期画面が表示される
 - [ ] Laravel から MySQL への接続が成功する（`task artisan migrate` が通る）
-- [ ] Mailpit の Web UI (`http://localhost:8025`) にアクセスできる
+- [ ] Mailpit の Web UI (`http://localhost:18025`) にアクセスできる
 - [ ] `task test` で PHPUnit のデフォルトテストが通る
 
 ---
@@ -173,7 +173,7 @@ infra/docker/
 ### 1-3a. PHP Dockerfile (`infra/docker/php/Dockerfile`)
 
 ```dockerfile
-FROM php:8.3-fpm-alpine
+FROM php:8.4-fpm-alpine
 
 # 必要な拡張
 RUN apk add --no-cache \
@@ -259,7 +259,7 @@ services:
   db:
     image: mysql:8.0
     ports:
-      - "3306:3306"
+      - "13306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpass}
       MYSQL_DATABASE: ${DB_DATABASE:-picture_book_log}
@@ -287,8 +287,8 @@ services:
   mailpit:
     image: axllent/mailpit:latest
     ports:
-      - "8025:8025"   # Web UI
-      - "1025:1025"   # SMTP
+      - "18025:8025"  # Web UI
+      - "11025:1025"  # SMTP
 
 volumes:
   db-data:
@@ -298,7 +298,7 @@ volumes:
 ポイント:
 - `db` に `healthcheck` を設定し、`app` は DB が ready になってから起動
 - `frontend-node-modules` を named volume にして、ホスト側の node_modules と競合しない
-- ポートマッピング: API=8080, Frontend=5173, Mailpit UI=8025
+- ポートマッピング: API=8080, Frontend=5173, MySQL=13306, Mailpit UI=18025, Mailpit SMTP=11025
 
 ### 1-3e. .env.example
 
@@ -455,7 +455,7 @@ tasks:
 | 2 | API ヘルスチェック | `curl http://localhost:8080/api/health` | `{"status":"ok"}` |
 | 3 | DB 接続 | `task migrate` | マイグレーション成功 |
 | 4 | React 画面 | ブラウザで `http://localhost:5173` | Vite + React 初期画面 |
-| 5 | Mailpit | ブラウザで `http://localhost:8025` | Mailpit Web UI 表示 |
+| 5 | Mailpit | ブラウザで `http://localhost:18025` | Mailpit Web UI 表示 |
 | 6 | テスト | `task test` | PHPUnit テスト通過 |
 | 7 | API プロキシ | フロントから `/api/health` fetch | JSON レスポンス取得 |
 
