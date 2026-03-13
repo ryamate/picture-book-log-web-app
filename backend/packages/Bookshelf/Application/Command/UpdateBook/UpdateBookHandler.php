@@ -1,0 +1,35 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Packages\Bookshelf\Application\Command\UpdateBook;
+
+use Packages\Bookshelf\Domain\Entity\PictureBook;
+use Packages\Bookshelf\Domain\Repository\PictureBookRepositoryInterface;
+use Packages\Bookshelf\Domain\ValueObject\Rating;
+use Packages\Bookshelf\Domain\ValueObject\ReadStatus;
+use Packages\Shared\ValueObject\PictureBookId;
+
+final class UpdateBookHandler
+{
+    public function __construct(
+        private readonly PictureBookRepositoryInterface $pictureBookRepository,
+    ) {}
+
+    public function handle(UpdateBookCommand $command): PictureBook
+    {
+        $book = $this->pictureBookRepository->findById(new PictureBookId($command->bookId));
+
+        if ($book === null) {
+            throw new \DomainException('Picture book not found.');
+        }
+
+        $book->updateReview(
+            rating: $command->rating !== null ? new Rating($command->rating) : null,
+            readStatus: ReadStatus::from($command->readStatus),
+            review: $command->review,
+        );
+
+        return $this->pictureBookRepository->save($book);
+    }
+}

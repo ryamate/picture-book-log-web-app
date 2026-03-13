@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ChildController;
 use App\Http\Controllers\Api\FamilyController;
+use App\Http\Controllers\Api\PictureBookController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', fn () => response()->json(['status' => 'ok']));
@@ -29,4 +30,16 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::post('/families/{family}/children', [ChildController::class, 'store']);
     Route::put('/families/{family}/children/{child}', [ChildController::class, 'update']);
     Route::delete('/families/{family}/children/{child}', [ChildController::class, 'destroy']);
+
+    // Google Books search
+    Route::get('/books/search', [PictureBookController::class, 'search']);
+
+    // Bookshelf (picture books)
+    Route::prefix('/families/{family}/books')->scopeBindings()->group(function () {
+        Route::get('/', [PictureBookController::class, 'index']);
+        Route::post('/', [PictureBookController::class, 'store']);
+        Route::get('/{pictureBook}', [PictureBookController::class, 'show']);
+        Route::put('/{pictureBook}', [PictureBookController::class, 'update']);
+        Route::delete('/{pictureBook}', [PictureBookController::class, 'destroy']);
+    });
 });

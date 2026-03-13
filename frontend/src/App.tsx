@@ -8,6 +8,9 @@ import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import CreateFamilyPage from './pages/CreateFamilyPage';
 import FamilySettingsPage from './pages/FamilySettingsPage';
+import BookSearchPage from './pages/BookSearchPage';
+import BookshelfPage from './pages/BookshelfPage';
+import BookDetailPage from './pages/BookDetailPage';
 
 export default function App() {
   return (
@@ -35,6 +38,9 @@ export default function App() {
             >
               <Route path="/" element={<DashboardPage />} />
               <Route path="/family/settings" element={<FamilySettingsPage />} />
+              <Route path="/books/search" element={<BookSearchPage />} />
+              <Route path="/books" element={<BookshelfPage />} />
+              <Route path="/books/:bookId" element={<BookDetailPage />} />
             </Route>
           </Route>
         </Routes>

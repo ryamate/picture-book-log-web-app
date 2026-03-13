@@ -18,4 +18,9 @@ class Family extends Model
     {
         return $this->hasMany(Child::class);
     }
+
+    public function pictureBooks(): HasMany
+    {
+        return $this->hasMany(PictureBook::class);
+    }
 }
