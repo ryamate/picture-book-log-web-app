@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useSearchGoogleBooks, useAddBook } from '../hooks/useBooks';
-import { useDebounce } from '../hooks/useDebounce';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -12,10 +11,17 @@ export default function BookSearchPage() {
   const { user } = useAuth();
   const familyId = user?.family_id ?? 0;
   const [query, setQuery] = useState('');
-  const debouncedQuery = useDebounce(query, 300);
-  const { data, isLoading } = useSearchGoogleBooks(debouncedQuery);
+  const [searchQuery, setSearchQuery] = useState('');
+  const { data, isLoading } = useSearchGoogleBooks(searchQuery);
   const addBook = useAddBook(familyId);
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
+
+  const handleSearch = () => {
+    const trimmed = query.trim();
+    if (trimmed.length >= 2) {
+      setSearchQuery(trimmed);
+    }
+  };
 
   const handleAdd = async (book: GoogleBook) => {
     try {
@@ -41,15 +47,26 @@ export default function BookSearchPage() {
         </Button>
       </div>
 
-      <Input
-        placeholder="タイトルや著者名で検索..."
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-      />
+      <form
+        className="flex gap-2"
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSearch();
+        }}
+      >
+        <Input
+          placeholder="タイトルや著者名で検索..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        <Button type="submit" disabled={query.trim().length < 2 || isLoading}>
+          検索
+        </Button>
+      </form>
 
       {isLoading && <p className="text-muted-foreground">検索中...</p>}
 
-      {data && data.items.length === 0 && debouncedQuery.length >= 2 && (
+      {data && data.items.length === 0 && searchQuery.length >= 2 && (
         <p className="text-muted-foreground">検索結果が見つかりませんでした</p>
       )}
 
