@@ -12,12 +12,23 @@ use Packages\Bookshelf\Domain\ValueObject\Isbn;
 use Packages\Family\Domain\ValueObject\FamilyId;
 use Packages\Shared\ValueObject\UserId;
 
+/**
+ * Handles registering a new picture book to a family's bookshelf.
+ */
 final class AddBookHandler
 {
     public function __construct(
         private readonly PictureBookRepositoryInterface $pictureBookRepository,
     ) {}
 
+    /**
+     * Register a new picture book. Rejects duplicates by Google Books ID.
+     *
+     * @param  AddBookCommand   $command
+     * @return PictureBook
+     *
+     * @throws \DomainException If a book with the same Google Books ID already exists in the family's bookshelf.
+     */
     public function handle(AddBookCommand $command): PictureBook
     {
         $familyId = new FamilyId($command->familyId);

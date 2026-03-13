@@ -10,12 +10,23 @@ use Packages\Bookshelf\Domain\ValueObject\Rating;
 use Packages\Bookshelf\Domain\ValueObject\ReadStatus;
 use Packages\Shared\ValueObject\PictureBookId;
 
+/**
+ * Handles updating review information (rating, read status, review text) for a picture book.
+ */
 final class UpdateBookHandler
 {
     public function __construct(
         private readonly PictureBookRepositoryInterface $pictureBookRepository,
     ) {}
 
+    /**
+     * Update the review details of an existing picture book.
+     *
+     * @param  UpdateBookCommand $command
+     * @return PictureBook
+     *
+     * @throws \DomainException If the picture book is not found.
+     */
     public function handle(UpdateBookCommand $command): PictureBook
     {
         $book = $this->pictureBookRepository->findById(new PictureBookId($command->bookId));

@@ -16,8 +16,19 @@ use Packages\Family\Domain\ValueObject\FamilyId;
 use Packages\Shared\ValueObject\PictureBookId;
 use Packages\Shared\ValueObject\UserId;
 
+/**
+ * Eloquent ORM implementation of the PictureBookRepositoryInterface.
+ *
+ * Translates between Eloquent models and domain entities for persistence operations.
+ */
 final class EloquentPictureBookRepository implements PictureBookRepositoryInterface
 {
+    /**
+     * Find a picture book by its ID.
+     *
+     * @param PictureBookId $id
+     * @return PictureBook|null
+     */
     public function findById(PictureBookId $id): ?PictureBook
     {
         $model = EloquentPictureBook::find($id->value());
@@ -25,6 +36,13 @@ final class EloquentPictureBookRepository implements PictureBookRepositoryInterf
         return $model ? $this->toDomainEntity($model) : null;
     }
 
+    /**
+     * Find a picture book by family ID and Google Books ID.
+     *
+     * @param FamilyId $familyId
+     * @param string $googleBooksId
+     * @return PictureBook|null
+     */
     public function findByFamilyIdAndGoogleBooksId(FamilyId $familyId, string $googleBooksId): ?PictureBook
     {
         $model = EloquentPictureBook::where('family_id', $familyId->value())
@@ -34,6 +52,12 @@ final class EloquentPictureBookRepository implements PictureBookRepositoryInterf
         return $model ? $this->toDomainEntity($model) : null;
     }
 
+    /**
+     * Save a picture book (create if new, update if existing).
+     *
+     * @param PictureBook $book
+     * @return PictureBook
+     */
     public function save(PictureBook $book): PictureBook
     {
         if ($book->id() === null) {
@@ -61,11 +85,23 @@ final class EloquentPictureBookRepository implements PictureBookRepositoryInterf
         return $this->toDomainEntity($model);
     }
 
+    /**
+     * Delete a picture book by its ID.
+     *
+     * @param PictureBookId $id
+     * @return void
+     */
     public function delete(PictureBookId $id): void
     {
         EloquentPictureBook::destroy($id->value());
     }
 
+    /**
+     * Convert an Eloquent model to a domain entity.
+     *
+     * @param EloquentPictureBook $model
+     * @return PictureBook
+     */
     private function toDomainEntity(EloquentPictureBook $model): PictureBook
     {
         return PictureBook::reconstruct(

@@ -4,8 +4,18 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Validates the request to update a picture book's reading information.
+ *
+ * Required: read_status (unread|reading|read). Optional: rating (1-5), review.
+ */
 class UpdateBookRequest extends FormRequest
 {
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
     public function authorize(): bool
     {
         return true;

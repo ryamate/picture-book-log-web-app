@@ -7,8 +7,15 @@ namespace Packages\Bookshelf\Application\Query\ListBooks;
 use App\Models\PictureBook;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
+/**
+ * Handles listing picture books for a family with optional status filtering, sorting, and pagination.
+ */
 final class ListBooksHandler
 {
+    /**
+     * @param  ListBooksQuery      $query
+     * @return LengthAwarePaginator Paginated list of picture books.
+     */
     public function handle(ListBooksQuery $query): LengthAwarePaginator
     {
         $builder = PictureBook::where('family_id', $query->familyId);

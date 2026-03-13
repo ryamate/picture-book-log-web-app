@@ -13,6 +13,11 @@ use Packages\Family\Domain\ValueObject\FamilyId;
 use Packages\Shared\ValueObject\PictureBookId;
 use Packages\Shared\ValueObject\UserId;
 
+/**
+ * 絵本エンティティ。
+ *
+ * 家族の本棚に登録された絵本を表し、読書状況やレビューを管理する。
+ */
 final class PictureBook
 {
     private function __construct(
@@ -29,6 +34,11 @@ final class PictureBook
         private ?string $review,
     ) {}
 
+    /**
+     * 新しい絵本を本棚に登録する。
+     *
+     * 初期状態は未読・レビューなしで作成される。
+     */
     public static function register(
         FamilyId $familyId,
         UserId $registeredBy,
@@ -53,6 +63,9 @@ final class PictureBook
         );
     }
 
+    /**
+     * 永続化層から絵本エンティティを再構築する。
+     */
     public static function reconstruct(
         PictureBookId $id,
         FamilyId $familyId,
@@ -81,6 +94,9 @@ final class PictureBook
         );
     }
 
+    /**
+     * 読書記録（評価・読書状況・感想）を更新する。
+     */
     public function updateReview(?Rating $rating, ReadStatus $readStatus, ?string $review): void
     {
         $this->rating = $rating;
@@ -88,56 +104,67 @@ final class PictureBook
         $this->review = $review;
     }
 
+    /** @return ?PictureBookId */
     public function id(): ?PictureBookId
     {
         return $this->id;
     }
 
+    /** @return FamilyId */
     public function familyId(): FamilyId
     {
         return $this->familyId;
     }
 
+    /** @return UserId */
     public function registeredBy(): UserId
     {
         return $this->registeredBy;
     }
 
+    /** @return ?string */
     public function googleBooksId(): ?string
     {
         return $this->googleBooksId;
     }
 
+    /** @return ?Isbn */
     public function isbn(): ?Isbn
     {
         return $this->isbn;
     }
 
+    /** @return BookTitle */
     public function title(): BookTitle
     {
         return $this->title;
     }
 
+    /** @return Authors */
     public function authors(): Authors
     {
         return $this->authors;
     }
 
+    /** @return ?string */
     public function thumbnailUrl(): ?string
     {
         return $this->thumbnailUrl;
     }
 
+    /** @return ?Rating */
     public function rating(): ?Rating
     {
         return $this->rating;
     }
 
+    /** @return ReadStatus */
     public function readStatus(): ReadStatus
     {
         return $this->readStatus;
     }
 
+    /** @return ?string */
     public function review(): ?string
     {
         return $this->review;

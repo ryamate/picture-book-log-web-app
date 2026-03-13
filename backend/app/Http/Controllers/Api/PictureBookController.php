@@ -24,8 +24,18 @@ use Packages\Bookshelf\Application\Query\ListBooks\ListBooksQuery;
 use Packages\Bookshelf\Application\Query\SearchGoogleBooks\SearchGoogleBooksHandler;
 use Packages\Bookshelf\Application\Query\SearchGoogleBooks\SearchGoogleBooksQuery;
 
+/**
+ * API controller for picture book CRUD operations and Google Books search.
+ */
 class PictureBookController extends Controller
 {
+    /**
+     * Search Google Books by keyword. GET /api/google-books/search
+     *
+     * @param Request $request
+     * @param SearchGoogleBooksHandler $handler
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function search(Request $request, SearchGoogleBooksHandler $handler)
     {
         $request->validate(['q' => ['required', 'string', 'min:1']]);
@@ -49,6 +59,14 @@ class PictureBookController extends Controller
         ]);
     }
 
+    /**
+     * List picture books for a family. GET /api/families/{family}/picture-books
+     *
+     * @param Request $request
+     * @param Family $family
+     * @param ListBooksHandler $handler
+     * @return PictureBookCollection
+     */
     public function index(Request $request, Family $family, ListBooksHandler $handler)
     {
         $this->authorize('view', $family);
@@ -64,6 +82,14 @@ class PictureBookController extends Controller
         return new PictureBookCollection($result);
     }
 
+    /**
+     * Add a new picture book to a family. POST /api/families/{family}/picture-books
+     *
+     * @param StoreBookRequest $request
+     * @param Family $family
+     * @param AddBookHandler $handler
+     * @return PictureBookResource|\Illuminate\Http\JsonResponse
+     */
     public function store(StoreBookRequest $request, Family $family, AddBookHandler $handler)
     {
         $this->authorize('update', $family);
@@ -87,6 +113,13 @@ class PictureBookController extends Controller
         }
     }
 
+    /**
+     * Show a single picture book. GET /api/families/{family}/picture-books/{pictureBook}
+     *
+     * @param Family $family
+     * @param PictureBook $pictureBook
+     * @return PictureBookResource
+     */
     public function show(Family $family, PictureBook $pictureBook)
     {
         $this->authorize('manage', $pictureBook);
@@ -94,6 +127,15 @@ class PictureBookController extends Controller
         return new PictureBookResource($pictureBook);
     }
 
+    /**
+     * Update a picture book's reading info. PUT /api/families/{family}/picture-books/{pictureBook}
+     *
+     * @param UpdateBookRequest $request
+     * @param Family $family
+     * @param PictureBook $pictureBook
+     * @param UpdateBookHandler $handler
+     * @return PictureBookResource
+     */
     public function update(UpdateBookRequest $request, Family $family, PictureBook $pictureBook, UpdateBookHandler $handler)
     {
         $this->authorize('manage', $pictureBook);
@@ -108,6 +150,14 @@ class PictureBookController extends Controller
         return new PictureBookResource($pictureBook->fresh());
     }
 
+    /**
+     * Delete a picture book. DELETE /api/families/{family}/picture-books/{pictureBook}
+     *
+     * @param Family $family
+     * @param PictureBook $pictureBook
+     * @param RemoveBookHandler $handler
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy(Family $family, PictureBook $pictureBook, RemoveBookHandler $handler)
     {
         $this->authorize('manage', $pictureBook);

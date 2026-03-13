@@ -5,9 +5,19 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * API resource for a single picture book.
+ *
+ * JSON structure: {id, google_books_id, isbn, title, authors, thumbnail_url, rating, read_status, review, registered_by: {id, name}, created_at}
+ */
 class PictureBookResource extends JsonResource
 {
-    /** @return array<string, mixed> */
+    /**
+     * Transform the resource into an array.
+     *
+     * @param Request $request
+     * @return array<string, mixed>
+     */
     public function toArray(Request $request): array
     {
         return [

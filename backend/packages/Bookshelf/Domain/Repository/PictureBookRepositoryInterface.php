@@ -8,13 +8,42 @@ use Packages\Bookshelf\Domain\Entity\PictureBook;
 use Packages\Family\Domain\ValueObject\FamilyId;
 use Packages\Shared\ValueObject\PictureBookId;
 
+/**
+ * 絵本リポジトリインターフェース。
+ *
+ * 絵本エンティティの永続化・検索・削除を担う。
+ */
 interface PictureBookRepositoryInterface
 {
+    /**
+     * IDで絵本を検索する。
+     *
+     * @param PictureBookId $id
+     * @return ?PictureBook 見つからない場合はnull
+     */
     public function findById(PictureBookId $id): ?PictureBook;
 
+    /**
+     * 家族IDとGoogle Books IDの組み合わせで絵本を検索する。
+     *
+     * @param FamilyId $familyId
+     * @param string $googleBooksId
+     * @return ?PictureBook 見つからない場合はnull
+     */
     public function findByFamilyIdAndGoogleBooksId(FamilyId $familyId, string $googleBooksId): ?PictureBook;
 
+    /**
+     * 絵本を保存（新規登録または更新）する。
+     *
+     * @param PictureBook $book
+     * @return PictureBook IDが付与された絵本エンティティ
+     */
     public function save(PictureBook $book): PictureBook;
 
+    /**
+     * 絵本を削除する。
+     *
+     * @param PictureBookId $id
+     */
     public function delete(PictureBookId $id): void;
 }
