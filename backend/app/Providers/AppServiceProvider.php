@@ -7,6 +7,8 @@ use Packages\Auth\Domain\Repository\UserRepositoryInterface;
 use Packages\Auth\Infrastructure\Repository\EloquentUserRepository;
 use Packages\Family\Domain\Repository\ChildRepositoryInterface;
 use Packages\Family\Domain\Repository\FamilyRepositoryInterface;
+use Packages\Bookshelf\Domain\Repository\PictureBookRepositoryInterface;
+use Packages\Bookshelf\Infrastructure\Repository\EloquentPictureBookRepository;
 use Packages\Family\Infrastructure\Repository\EloquentChildRepository;
 use Packages\Family\Infrastructure\Repository\EloquentFamilyRepository;
 
@@ -20,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(UserRepositoryInterface::class, EloquentUserRepository::class);
         $this->app->bind(FamilyRepositoryInterface::class, EloquentFamilyRepository::class);
         $this->app->bind(ChildRepositoryInterface::class, EloquentChildRepository::class);
+        $this->app->bind(PictureBookRepositoryInterface::class, EloquentPictureBookRepository::class);
     }
 
     /**

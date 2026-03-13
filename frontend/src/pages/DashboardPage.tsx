@@ -37,9 +37,14 @@ export default function DashboardPage() {
                 </ul>
               </div>
             )}
-            <Button variant="outline" asChild>
-              <Link to="/family/settings">家族設定</Link>
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" asChild>
+                <Link to="/family/settings">家族設定</Link>
+              </Button>
+              <Button asChild>
+                <Link to="/books">本棚</Link>
+              </Button>
+            </div>
           </CardContent>
         </Card>
       )}
