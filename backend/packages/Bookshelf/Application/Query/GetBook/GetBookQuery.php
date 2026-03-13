@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Packages\Bookshelf\Application\Query\GetBook;
 
 /**
- * Query DTO for retrieving a single picture book by its ID.
+ * IDを指定して絵本を1件取得するクエリDTO。
  */
-final class GetBookQuery
+final readonly class GetBookQuery
 {
     /**
-     * @param int $bookId ID of the picture book to retrieve
+     * @param int $bookId 取得する絵本のID
      */
     public function __construct(
-        public readonly int $bookId,
+        public int $bookId,
     ) {}
 }

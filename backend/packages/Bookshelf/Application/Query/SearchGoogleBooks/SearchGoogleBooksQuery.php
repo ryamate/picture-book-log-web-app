@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace Packages\Bookshelf\Application\Query\SearchGoogleBooks;
 
 /**
- * Query DTO for searching books via the Google Books API.
+ * Google Books APIを使用して書籍を検索するクエリDTO。
  */
-final class SearchGoogleBooksQuery
+final readonly class SearchGoogleBooksQuery
 {
     /**
-     * @param string $keyword    Search keyword
-     * @param int    $startIndex Pagination offset
-     * @param int    $maxResults Maximum number of results to return
+     * @param string $keyword    検索キーワード
+     * @param int    $startIndex ページネーションのオフセット
+     * @param int    $maxResults 返却する最大件数
      */
     public function __construct(
-        public readonly string $keyword,
-        public readonly int $startIndex = 0,
-        public readonly int $maxResults = 20,
+        public string $keyword,
+        public int    $startIndex = 0,
+        public int    $maxResults = 20,
     ) {}
 }

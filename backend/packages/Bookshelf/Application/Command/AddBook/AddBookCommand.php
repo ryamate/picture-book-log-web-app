@@ -5,26 +5,26 @@ declare(strict_types=1);
 namespace Packages\Bookshelf\Application\Command\AddBook;
 
 /**
- * Command DTO for adding a new picture book to a family's bookshelf.
+ * 家族の本棚に新しい絵本を追加するコマンドDTO。
  */
-final class AddBookCommand
+final readonly class AddBookCommand
 {
     /**
-     * @param int         $familyId       Family to add the book to
-     * @param int         $userId         User who is registering the book
-     * @param string|null $googleBooksId  Google Books volume ID
-     * @param string|null $isbn           ISBN of the book
-     * @param string      $title          Book title
-     * @param array       $authors        List of author names
-     * @param string|null $thumbnailUrl   URL of the book's thumbnail image
+     * @param int         $familyId       絵本を追加する家族のID
+     * @param int         $userId         絵本を登録するユーザーのID
+     * @param string|null $googleBooksId  Google BooksのボリュームID
+     * @param string|null $isbn           絵本のISBN
+     * @param string      $title          絵本のタイトル
+     * @param array       $authors        著者名のリスト
+     * @param string|null $thumbnailUrl   絵本のサムネイル画像のURL
      */
     public function __construct(
-        public readonly int $familyId,
-        public readonly int $userId,
-        public readonly ?string $googleBooksId,
-        public readonly ?string $isbn,
-        public readonly string $title,
-        public readonly array $authors,
-        public readonly ?string $thumbnailUrl,
+        public int     $familyId,
+        public int     $userId,
+        public ?string $googleBooksId,
+        public ?string $isbn,
+        public string  $title,
+        public array   $authors,
+        public ?string $thumbnailUrl,
     ) {}
 }

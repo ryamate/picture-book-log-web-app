@@ -8,13 +8,13 @@ use App\Models\PictureBook;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 /**
- * Handles listing picture books for a family with optional status filtering, sorting, and pagination.
+ * 家族の絵本一覧を、ステータスによる絞り込み・ソート・ページネーション付きで取得する処理を行う。
  */
 final class ListBooksHandler
 {
     /**
      * @param  ListBooksQuery      $query
-     * @return LengthAwarePaginator Paginated list of picture books.
+     * @return LengthAwarePaginator ページネーション付きの絵本一覧
      */
     public function handle(ListBooksQuery $query): LengthAwarePaginator
     {

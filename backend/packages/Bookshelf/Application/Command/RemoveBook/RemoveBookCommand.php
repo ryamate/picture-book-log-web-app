@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Packages\Bookshelf\Application\Command\RemoveBook;
 
 /**
- * Command DTO for removing a picture book from the bookshelf.
+ * 本棚から絵本を削除するコマンドDTO。
  */
-final class RemoveBookCommand
+final readonly class RemoveBookCommand
 {
     /**
-     * @param int $bookId ID of the picture book to remove
+     * @param int $bookId 削除する絵本のID
      */
     public function __construct(
-        public readonly int $bookId,
+        public int $bookId,
     ) {}
 }

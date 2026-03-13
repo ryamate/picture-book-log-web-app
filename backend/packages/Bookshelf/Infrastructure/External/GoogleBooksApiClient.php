@@ -4,24 +4,28 @@ declare(strict_types=1);
 
 namespace Packages\Bookshelf\Infrastructure\External;
 
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 
 /**
- * HTTP client for the Google Books API.
+ * Google Books APIのHTTPクライアント。
  *
- * Searches volumes and transforms the API response into a normalized format.
+ * 書籍の検索を行い、APIレスポンスを正規化された形式に変換する。
  */
 final class GoogleBooksApiClient
 {
     private const BASE_URL = 'https://www.googleapis.com/books/v1/volumes';
 
     /**
-     * Search Google Books by keyword.
+     * キーワードでGoogle Booksを検索する。
      *
-     * @param string $keyword
-     * @param int $startIndex
-     * @param int $maxResults
+     * @param string $keyword 検索キーワード
+     * @param int $startIndex 取得開始位置
+     * @param int $maxResults 最大取得件数
      * @return array{total_items: int, items: array<int, array>}
+     * @throws ConnectionException
+     * @throws RequestException
      */
     public function search(string $keyword, int $startIndex = 0, int $maxResults = 20): array
     {
@@ -46,9 +50,9 @@ final class GoogleBooksApiClient
     }
 
     /**
-     * Transform the raw API response into a normalized structure.
+     * APIの生レスポンスを正規化された構造に変換する。
      *
-     * @param array $data
+     * @param array $data APIレスポンスデータ
      * @return array{total_items: int, items: array<int, array>}
      */
     private function transformResponse(array $data): array
@@ -63,9 +67,9 @@ final class GoogleBooksApiClient
     }
 
     /**
-     * Transform a single volume item into a normalized array.
+     * 単一の書籍アイテムを正規化された配列に変換する。
      *
-     * @param array $item
+     * @param array $item 書籍アイテム
      * @return array{google_books_id: string, title: string, authors: array, isbn: ?string, thumbnail_url: ?string, published_date: ?string, description: ?string, page_count: ?int}
      */
     private function transformItem(array $item): array
@@ -92,10 +96,10 @@ final class GoogleBooksApiClient
     }
 
     /**
-     * Extract an ISBN of the given type from industry identifiers.
+     * 業界識別子から指定された種類のISBNを抽出する。
      *
-     * @param array $identifiers
-     * @param string $type ISBN type (e.g. 'ISBN_13', 'ISBN_10')
+     * @param array $identifiers 業界識別子の配列
+     * @param string $type ISBNの種類（例: 'ISBN_13', 'ISBN_10'）
      * @return string|null
      */
     private function extractIsbn(array $identifiers, string $type): ?string

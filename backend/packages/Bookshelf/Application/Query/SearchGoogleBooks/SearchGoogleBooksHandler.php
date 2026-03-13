@@ -4,20 +4,24 @@ declare(strict_types=1);
 
 namespace Packages\Bookshelf\Application\Query\SearchGoogleBooks;
 
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\RequestException;
 use Packages\Bookshelf\Infrastructure\External\GoogleBooksApiClient;
 
 /**
- * Handles searching for books via the Google Books API.
+ * Google Books APIを使用して書籍を検索する処理を行う。
  */
-final class SearchGoogleBooksHandler
+final readonly class SearchGoogleBooksHandler
 {
     public function __construct(
-        private readonly GoogleBooksApiClient $googleBooksApiClient,
+        private GoogleBooksApiClient $googleBooksApiClient,
     ) {}
 
     /**
-     * @param  SearchGoogleBooksQuery $query
-     * @return array Search results from Google Books API.
+     * @param SearchGoogleBooksQuery $query
+     * @return array Google Books APIからの検索結果
+     * @throws ConnectionException
+     * @throws RequestException
      */
     public function handle(SearchGoogleBooksQuery $query): array
     {

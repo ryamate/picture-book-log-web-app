@@ -5,14 +5,14 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * Validates the request to update a picture book's reading information.
+ * 絵本の読書情報更新リクエストのバリデーション。
  *
- * Required: read_status (unread|reading|read). Optional: rating (1-5), review.
+ * 必須: read_status (unread|reading|read)。任意: rating (1-5), review。
  */
 class UpdateBookRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * ユーザーがこのリクエストを実行する権限があるかを判定する。
      *
      * @return bool
      */

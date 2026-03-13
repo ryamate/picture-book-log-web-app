@@ -6,19 +6,19 @@ use App\Models\PictureBook;
 use App\Models\User;
 
 /**
- * Authorization policy for PictureBook actions.
+ * 絵本アクションの認可ポリシー。
  *
- * Ensures users can only manage picture books belonging to their own family.
+ * ユーザーが自分の家族に属する絵本のみ操作できることを保証する。
  */
 class PictureBookPolicy
 {
     /**
-     * Determine if the user can view, update, or delete the picture book.
+     * ユーザーが絵本の閲覧・更新・削除を行えるかを判定する。
      *
-     * Authorized when the user belongs to the same family as the picture book.
+     * ユーザーが絵本と同じ家族に属している場合に認可される。
      *
-     * @param User $user
-     * @param PictureBook $pictureBook
+     * @param User $user ユーザーモデル
+     * @param PictureBook $pictureBook 絵本モデル
      * @return bool
      */
     public function manage(User $user, PictureBook $pictureBook): bool

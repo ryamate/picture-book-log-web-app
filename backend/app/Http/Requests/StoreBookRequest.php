@@ -5,14 +5,14 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * Validates the request to add a new picture book.
+ * 絵本の新規登録リクエストのバリデーション。
  *
- * Required: title, authors. Optional: google_books_id, isbn, thumbnail_url.
+ * 必須: title, authors。任意: google_books_id, isbn, thumbnail_url。
  */
 class StoreBookRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * ユーザーがこのリクエストを実行する権限があるかを判定する。
      *
      * @return bool
      */

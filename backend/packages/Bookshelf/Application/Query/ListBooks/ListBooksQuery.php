@@ -5,22 +5,22 @@ declare(strict_types=1);
 namespace Packages\Bookshelf\Application\Query\ListBooks;
 
 /**
- * Query DTO for listing picture books in a family's bookshelf with filtering, sorting, and pagination.
+ * 家族の本棚の絵本一覧を、絞り込み・ソート・ページネーション付きで取得するクエリDTO。
  */
-final class ListBooksQuery
+final readonly class ListBooksQuery
 {
     /**
-     * @param int         $familyId Family whose books to list
-     * @param string|null $status   Filter by read status (nullable)
-     * @param string      $sort     Sort column (created_at, title, or rating)
-     * @param string      $order    Sort direction (asc or desc)
-     * @param int         $perPage  Number of items per page
+     * @param int         $familyId 絵本一覧を取得する家族のID
+     * @param string|null $status   読書ステータスによる絞り込み（null許容）
+     * @param string      $sort     ソートカラム（created_at, title, rating）
+     * @param string      $order    ソート方向（asc または desc）
+     * @param int         $perPage  1ページあたりの表示件数
      */
     public function __construct(
-        public readonly int $familyId,
-        public readonly ?string $status = null,
-        public readonly string $sort = 'created_at',
-        public readonly string $order = 'desc',
-        public readonly int $perPage = 20,
+        public int     $familyId,
+        public ?string $status = null,
+        public string  $sort = 'created_at',
+        public string  $order = 'desc',
+        public int     $perPage = 20,
     ) {}
 }

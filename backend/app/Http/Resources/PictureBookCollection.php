@@ -6,9 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 /**
- * Paginated collection of PictureBookResource items.
+ * PictureBookResourceのページネーション付きコレクション。
  *
- * JSON structure: {data: PictureBookResource[], meta: {current_page, last_page, per_page, total}}
+ * JSON構造: {data: PictureBookResource[], meta: {current_page, last_page, per_page, total}}
  */
 class PictureBookCollection extends ResourceCollection
 {
@@ -16,11 +16,11 @@ class PictureBookCollection extends ResourceCollection
     public $collects = PictureBookResource::class;
 
     /**
-     * Customize the pagination metadata included in the response.
+     * レスポンスに含めるページネーションメタデータをカスタマイズする。
      *
-     * @param mixed $request
-     * @param array $paginated
-     * @param array $default
+     * @param mixed $request リクエスト
+     * @param array $paginated ページネーション情報
+     * @param array $default デフォルト値
      * @return array
      */
     public function paginationInformation($request, $paginated, $default): array

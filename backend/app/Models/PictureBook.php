@@ -4,9 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
- * Eloquent model representing a picture book registered by a family.
+ * 家族が登録した絵本を表すEloquentモデル。
  *
  * @property int $id
  * @property int $family_id
@@ -19,8 +20,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $rating
  * @property string $read_status
  * @property string|null $review
- * @property \Illuminate\Support\Carbon $created_at
- * @property \Illuminate\Support\Carbon $updated_at
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
  */
 class PictureBook extends Model
 {
@@ -43,7 +44,7 @@ class PictureBook extends Model
     ];
 
     /**
-     * Get the family that owns this picture book.
+     * この絵本を所有する家族を取得する。
      *
      * @return BelongsTo
      */
@@ -53,7 +54,7 @@ class PictureBook extends Model
     }
 
     /**
-     * Get the user who registered this picture book.
+     * この絵本を登録したユーザーを取得する。
      *
      * @return BelongsTo
      */

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Packages\Bookshelf\Application\Command\AddBook;
 
+use DomainException;
 use Packages\Bookshelf\Domain\Entity\PictureBook;
 use Packages\Bookshelf\Domain\Repository\PictureBookRepositoryInterface;
 use Packages\Bookshelf\Domain\ValueObject\Authors;
@@ -13,21 +14,21 @@ use Packages\Family\Domain\ValueObject\FamilyId;
 use Packages\Shared\ValueObject\UserId;
 
 /**
- * Handles registering a new picture book to a family's bookshelf.
+ * 家族の本棚に新しい絵本を登録する処理を行う。
  */
-final class AddBookHandler
+final readonly class AddBookHandler
 {
     public function __construct(
-        private readonly PictureBookRepositoryInterface $pictureBookRepository,
+        private PictureBookRepositoryInterface $pictureBookRepository,
     ) {}
 
     /**
-     * Register a new picture book. Rejects duplicates by Google Books ID.
+     * 新しい絵本を登録する。Google Books IDによる重複を拒否する。
      *
      * @param  AddBookCommand   $command
      * @return PictureBook
      *
-     * @throws \DomainException If a book with the same Google Books ID already exists in the family's bookshelf.
+     * @throws DomainException 同じGoogle Books IDの絵本が家族の本棚に既に存在する場合
      */
     public function handle(AddBookCommand $command): PictureBook
     {
@@ -39,7 +40,7 @@ final class AddBookHandler
                 $command->googleBooksId,
             );
             if ($existing !== null) {
-                throw new \DomainException('This book is already registered in the bookshelf.');
+                throw new DomainException('This book is already registered in the bookshelf.');
             }
         }
 

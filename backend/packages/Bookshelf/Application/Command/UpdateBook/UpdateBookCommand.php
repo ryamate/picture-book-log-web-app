@@ -5,20 +5,20 @@ declare(strict_types=1);
 namespace Packages\Bookshelf\Application\Command\UpdateBook;
 
 /**
- * Command DTO for updating a picture book's review information.
+ * 絵本のレビュー情報を更新するコマンドDTO。
  */
-final class UpdateBookCommand
+final readonly class UpdateBookCommand
 {
     /**
-     * @param int         $bookId     ID of the picture book to update
-     * @param int|null    $rating     Rating value (nullable)
-     * @param string      $readStatus Read status identifier
-     * @param string|null $review     Review text (nullable)
+     * @param int         $bookId     更新する絵本のID
+     * @param int|null    $rating     評価値（null許容）
+     * @param string      $readStatus 読書ステータスの識別子
+     * @param string|null $review     レビューテキスト（null許容）
      */
     public function __construct(
-        public readonly int $bookId,
-        public readonly ?int $rating,
-        public readonly string $readStatus,
-        public readonly ?string $review,
+        public int     $bookId,
+        public ?int    $rating,
+        public string  $readStatus,
+        public ?string $review,
     ) {}
 }

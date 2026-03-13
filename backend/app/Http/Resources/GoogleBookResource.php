@@ -6,16 +6,16 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * API resource for a Google Books search result.
+ * Google Books検索結果のAPIリソース。
  *
- * JSON structure: {google_books_id, title, authors, isbn, thumbnail_url, published_date, description, page_count}
+ * JSON構造: {google_books_id, title, authors, isbn, thumbnail_url, published_date, description, page_count}
  */
 class GoogleBookResource extends JsonResource
 {
     /**
-     * Transform the resource into an array.
+     * リソースを配列に変換する。
      *
-     * @param Request $request
+     * @param Request $request リクエスト
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array

@@ -6,16 +6,16 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * API resource for a single picture book.
+ * 単一の絵本のAPIリソース。
  *
- * JSON structure: {id, google_books_id, isbn, title, authors, thumbnail_url, rating, read_status, review, registered_by: {id, name}, created_at}
+ * JSON構造: {id, google_books_id, isbn, title, authors, thumbnail_url, rating, read_status, review, registered_by: {id, name}, created_at}
  */
 class PictureBookResource extends JsonResource
 {
     /**
-     * Transform the resource into an array.
+     * リソースを配列に変換する。
      *
-     * @param Request $request
+     * @param Request $request リクエスト
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array

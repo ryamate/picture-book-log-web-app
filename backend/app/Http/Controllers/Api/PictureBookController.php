@@ -12,6 +12,7 @@ use App\Models\Family;
 use App\Models\PictureBook;
 use DomainException;
 use Illuminate\Http\Client\RequestException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Packages\Bookshelf\Application\Command\AddBook\AddBookCommand;
 use Packages\Bookshelf\Application\Command\AddBook\AddBookHandler;
@@ -25,16 +26,16 @@ use Packages\Bookshelf\Application\Query\SearchGoogleBooks\SearchGoogleBooksHand
 use Packages\Bookshelf\Application\Query\SearchGoogleBooks\SearchGoogleBooksQuery;
 
 /**
- * API controller for picture book CRUD operations and Google Books search.
+ * 絵本のCRUD操作およびGoogle Books検索のAPIコントローラー。
  */
 class PictureBookController extends Controller
 {
     /**
-     * Search Google Books by keyword. GET /api/google-books/search
+     * キーワードでGoogle Booksを検索する。 GET /api/google-books/search
      *
-     * @param Request $request
-     * @param SearchGoogleBooksHandler $handler
-     * @return \Illuminate\Http\JsonResponse
+     * @param Request $request リクエスト
+     * @param SearchGoogleBooksHandler $handler 検索ハンドラー
+     * @return JsonResponse
      */
     public function search(Request $request, SearchGoogleBooksHandler $handler)
     {
@@ -60,11 +61,11 @@ class PictureBookController extends Controller
     }
 
     /**
-     * List picture books for a family. GET /api/families/{family}/picture-books
+     * 家族の絵本一覧を取得する。 GET /api/families/{family}/picture-books
      *
-     * @param Request $request
-     * @param Family $family
-     * @param ListBooksHandler $handler
+     * @param Request $request リクエスト
+     * @param Family $family 家族モデル
+     * @param ListBooksHandler $handler 一覧取得ハンドラー
      * @return PictureBookCollection
      */
     public function index(Request $request, Family $family, ListBooksHandler $handler)
@@ -83,12 +84,12 @@ class PictureBookController extends Controller
     }
 
     /**
-     * Add a new picture book to a family. POST /api/families/{family}/picture-books
+     * 家族に新しい絵本を追加する。 POST /api/families/{family}/picture-books
      *
-     * @param StoreBookRequest $request
-     * @param Family $family
-     * @param AddBookHandler $handler
-     * @return PictureBookResource|\Illuminate\Http\JsonResponse
+     * @param StoreBookRequest $request 絵本登録リクエスト
+     * @param Family $family 家族モデル
+     * @param AddBookHandler $handler 絵本追加ハンドラー
+     * @return PictureBookResource|JsonResponse
      */
     public function store(StoreBookRequest $request, Family $family, AddBookHandler $handler)
     {
@@ -114,10 +115,10 @@ class PictureBookController extends Controller
     }
 
     /**
-     * Show a single picture book. GET /api/families/{family}/picture-books/{pictureBook}
+     * 絵本の詳細を取得する。 GET /api/families/{family}/picture-books/{pictureBook}
      *
-     * @param Family $family
-     * @param PictureBook $pictureBook
+     * @param Family $family 家族モデル
+     * @param PictureBook $pictureBook 絵本モデル
      * @return PictureBookResource
      */
     public function show(Family $family, PictureBook $pictureBook)
@@ -128,12 +129,12 @@ class PictureBookController extends Controller
     }
 
     /**
-     * Update a picture book's reading info. PUT /api/families/{family}/picture-books/{pictureBook}
+     * 絵本の読書情報を更新する。 PUT /api/families/{family}/picture-books/{pictureBook}
      *
-     * @param UpdateBookRequest $request
-     * @param Family $family
-     * @param PictureBook $pictureBook
-     * @param UpdateBookHandler $handler
+     * @param UpdateBookRequest $request 絵本更新リクエスト
+     * @param Family $family 家族モデル
+     * @param PictureBook $pictureBook 絵本モデル
+     * @param UpdateBookHandler $handler 絵本更新ハンドラー
      * @return PictureBookResource
      */
     public function update(UpdateBookRequest $request, Family $family, PictureBook $pictureBook, UpdateBookHandler $handler)
@@ -151,12 +152,12 @@ class PictureBookController extends Controller
     }
 
     /**
-     * Delete a picture book. DELETE /api/families/{family}/picture-books/{pictureBook}
+     * 絵本を削除する。 DELETE /api/families/{family}/picture-books/{pictureBook}
      *
-     * @param Family $family
-     * @param PictureBook $pictureBook
-     * @param RemoveBookHandler $handler
-     * @return \Illuminate\Http\JsonResponse
+     * @param Family $family 家族モデル
+     * @param PictureBook $pictureBook 絵本モデル
+     * @param RemoveBookHandler $handler 絵本削除ハンドラー
+     * @return JsonResponse
      */
     public function destroy(Family $family, PictureBook $pictureBook, RemoveBookHandler $handler)
     {

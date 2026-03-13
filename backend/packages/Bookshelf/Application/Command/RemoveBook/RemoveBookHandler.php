@@ -8,16 +8,16 @@ use Packages\Bookshelf\Domain\Repository\PictureBookRepositoryInterface;
 use Packages\Shared\ValueObject\PictureBookId;
 
 /**
- * Handles deleting a picture book from the bookshelf.
+ * 本棚から絵本を削除する処理を行う。
  */
-final class RemoveBookHandler
+final readonly class RemoveBookHandler
 {
     public function __construct(
-        private readonly PictureBookRepositoryInterface $pictureBookRepository,
+        private PictureBookRepositoryInterface $pictureBookRepository,
     ) {}
 
     /**
-     * Delete the specified picture book.
+     * 指定された絵本を削除する。
      *
      * @param  RemoveBookCommand $command
      * @return void

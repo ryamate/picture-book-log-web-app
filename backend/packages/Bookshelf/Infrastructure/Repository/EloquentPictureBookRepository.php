@@ -17,16 +17,16 @@ use Packages\Shared\ValueObject\PictureBookId;
 use Packages\Shared\ValueObject\UserId;
 
 /**
- * Eloquent ORM implementation of the PictureBookRepositoryInterface.
+ * PictureBookRepositoryInterfaceのEloquent ORM実装。
  *
- * Translates between Eloquent models and domain entities for persistence operations.
+ * Eloquentモデルとドメインエンティティ間の変換を行い、永続化操作を提供する。
  */
 final class EloquentPictureBookRepository implements PictureBookRepositoryInterface
 {
     /**
-     * Find a picture book by its ID.
+     * IDで絵本を検索する。
      *
-     * @param PictureBookId $id
+     * @param PictureBookId $id 絵本ID
      * @return PictureBook|null
      */
     public function findById(PictureBookId $id): ?PictureBook
@@ -37,10 +37,10 @@ final class EloquentPictureBookRepository implements PictureBookRepositoryInterf
     }
 
     /**
-     * Find a picture book by family ID and Google Books ID.
+     * 家族IDとGoogle Books IDで絵本を検索する。
      *
-     * @param FamilyId $familyId
-     * @param string $googleBooksId
+     * @param FamilyId $familyId 家族ID
+     * @param string $googleBooksId Google Books ID
      * @return PictureBook|null
      */
     public function findByFamilyIdAndGoogleBooksId(FamilyId $familyId, string $googleBooksId): ?PictureBook
@@ -53,9 +53,9 @@ final class EloquentPictureBookRepository implements PictureBookRepositoryInterf
     }
 
     /**
-     * Save a picture book (create if new, update if existing).
+     * 絵本を保存する（新規の場合は作成、既存の場合は更新）。
      *
-     * @param PictureBook $book
+     * @param PictureBook $book 絵本エンティティ
      * @return PictureBook
      */
     public function save(PictureBook $book): PictureBook
@@ -86,9 +86,9 @@ final class EloquentPictureBookRepository implements PictureBookRepositoryInterf
     }
 
     /**
-     * Delete a picture book by its ID.
+     * IDで絵本を削除する。
      *
-     * @param PictureBookId $id
+     * @param PictureBookId $id 絵本ID
      * @return void
      */
     public function delete(PictureBookId $id): void
@@ -97,9 +97,9 @@ final class EloquentPictureBookRepository implements PictureBookRepositoryInterf
     }
 
     /**
-     * Convert an Eloquent model to a domain entity.
+     * Eloquentモデルをドメインエンティティに変換する。
      *
-     * @param EloquentPictureBook $model
+     * @param EloquentPictureBook $model Eloquentモデル
      * @return PictureBook
      */
     private function toDomainEntity(EloquentPictureBook $model): PictureBook
