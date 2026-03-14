@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Packages\Bookshelf\Domain\Repository;
 
 use Packages\Bookshelf\Domain\Entity\PictureBook;
-use Packages\Family\Domain\ValueObject\FamilyId;
+use Packages\Shared\ValueObject\FamilyId;
 use Packages\Shared\ValueObject\PictureBookId;
 
 /**

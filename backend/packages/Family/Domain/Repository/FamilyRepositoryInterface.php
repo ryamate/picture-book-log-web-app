@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Packages\Family\Domain\Repository;
 
 use Packages\Family\Domain\Entity\Family;
-use Packages\Family\Domain\ValueObject\FamilyId;
+use Packages\Shared\ValueObject\FamilyId;
 
 interface FamilyRepositoryInterface
 {

@@ -9,7 +9,7 @@ use Packages\Bookshelf\Domain\ValueObject\BookTitle;
 use Packages\Bookshelf\Domain\ValueObject\Isbn;
 use Packages\Bookshelf\Domain\ValueObject\Rating;
 use Packages\Bookshelf\Domain\ValueObject\ReadStatus;
-use Packages\Family\Domain\ValueObject\FamilyId;
+use Packages\Shared\ValueObject\FamilyId;
 use Packages\Shared\ValueObject\PictureBookId;
 use Packages\Shared\ValueObject\UserId;
 

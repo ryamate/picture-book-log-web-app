@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useBooks } from '../hooks/useBooks';
 import { Button } from '@/components/ui/button';
@@ -30,9 +30,7 @@ export default function BookshelfPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">本棚</h1>
-        <Button asChild>
-          <Link to="/books/search">絵本を検索</Link>
-        </Button>
+        <Button onClick={() => navigate('/books/search')}>絵本を検索</Button>
       </div>
 
       <div className="flex gap-2">

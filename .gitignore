@@ -7,3 +7,7 @@ Thumbs.db
 
 # Claude Code
 .agent_tmp/
+
+# Workspace (Claude Code logs, screenshots, etc.)
+docs/workspace/
+!docs/workspace/.gitkeep

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Packages\Family\Domain\Repository;
 
 use Packages\Family\Domain\Entity\Child;
-use Packages\Family\Domain\ValueObject\ChildId;
-use Packages\Family\Domain\ValueObject\FamilyId;
+use Packages\Shared\ValueObject\ChildId;
+use Packages\Shared\ValueObject\FamilyId;
 
 interface ChildRepositoryInterface
 {

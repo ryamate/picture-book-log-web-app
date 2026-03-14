@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useBook, useUpdateBook, useRemoveBook } from '../hooks/useBooks';
+import { useRecords } from '../hooks/useRecords';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -21,6 +22,7 @@ export default function BookDetailPage() {
   const { data: book, isLoading } = useBook(familyId, numericBookId);
   const updateBook = useUpdateBook(familyId, numericBookId);
   const removeBook = useRemoveBook(familyId);
+  const { data: recordsData } = useRecords(familyId, { picture_book_id: numericBookId, per_page: 5 });
 
   const [isEditing, setIsEditing] = useState(false);
   const [rating, setRating] = useState<number | null>(null);
@@ -175,6 +177,60 @@ export default function BookDetailPage() {
                 </Button>
               </div>
             </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-lg">読み聞かせ記録</CardTitle>
+          <Button size="sm" onClick={() => navigate(`/records/new?book_id=${numericBookId}`)}>
+            記録する
+          </Button>
+        </CardHeader>
+        <CardContent>
+          {recordsData && recordsData.data.length > 0 ? (
+            <div className="space-y-3">
+              {recordsData.data.map((record) => (
+                <Link
+                  key={record.id}
+                  to={`/records/${record.id}`}
+                  className="block rounded border p-3 hover:bg-muted/50"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">{record.read_date}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {record.children.map((c) => c.name).join(', ')}
+                    </span>
+                  </div>
+                  {record.memo && (
+                    <p className="mt-1 truncate text-sm text-muted-foreground">{record.memo}</p>
+                  )}
+                  {record.tags.length > 0 && (
+                    <div className="mt-1 flex gap-1">
+                      {record.tags.map((tag) => (
+                        <span
+                          key={tag.id}
+                          className="rounded bg-muted px-1.5 py-0.5 text-xs"
+                        >
+                          {tag.name}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </Link>
+              ))}
+              {recordsData.meta.total > 5 && (
+                <Link
+                  to={`/records?picture_book_id=${numericBookId}`}
+                  className="block text-center text-sm text-muted-foreground hover:underline"
+                >
+                  すべての記録を見る ({recordsData.meta.total}件)
+                </Link>
+              )}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">まだ記録がありません</p>
           )}
         </CardContent>
       </Card>

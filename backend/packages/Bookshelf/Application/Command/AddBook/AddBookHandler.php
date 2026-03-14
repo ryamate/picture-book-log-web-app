@@ -10,7 +10,7 @@ use Packages\Bookshelf\Domain\Repository\PictureBookRepositoryInterface;
 use Packages\Bookshelf\Domain\ValueObject\Authors;
 use Packages\Bookshelf\Domain\ValueObject\BookTitle;
 use Packages\Bookshelf\Domain\ValueObject\Isbn;
-use Packages\Family\Domain\ValueObject\FamilyId;
+use Packages\Shared\ValueObject\FamilyId;
 use Packages\Shared\ValueObject\UserId;
 
 /**

@@ -23,4 +23,9 @@ class Family extends Model
     {
         return $this->hasMany(PictureBook::class);
     }
+
+    public function readRecords(): HasMany
+    {
+        return $this->hasMany(ReadRecord::class);
+    }
 }

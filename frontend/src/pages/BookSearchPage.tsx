@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import type { GoogleBook } from '../api/books';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export default function BookSearchPage() {
   const { user } = useAuth();
@@ -13,6 +13,7 @@ export default function BookSearchPage() {
   const [query, setQuery] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const { data, isLoading } = useSearchGoogleBooks(searchQuery);
+  const navigate = useNavigate();
   const addBook = useAddBook(familyId);
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
 
@@ -42,8 +43,8 @@ export default function BookSearchPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">絵本を検索</h1>
-        <Button variant="outline" asChild>
-          <Link to="/books">本棚に戻る</Link>
+        <Button variant="outline" onClick={() => navigate('/books')}>
+          本棚に戻る
         </Button>
       </div>
 

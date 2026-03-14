@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Packages\Family\Application\Command\RemoveChild;
 
 use Packages\Family\Domain\Repository\ChildRepositoryInterface;
-use Packages\Family\Domain\ValueObject\ChildId;
+use Packages\Shared\ValueObject\ChildId;
 
 final class RemoveChildHandler
 {

@@ -8,12 +8,12 @@ use Packages\Family\Domain\Entity\Child;
 use Packages\Family\Domain\Repository\ChildRepositoryInterface;
 use Packages\Family\Domain\ValueObject\Birthday;
 use Packages\Family\Domain\ValueObject\ChildName;
-use Packages\Family\Domain\ValueObject\FamilyId;
+use Packages\Shared\ValueObject\FamilyId;
 
-final class AddChildHandler
+final readonly class AddChildHandler
 {
     public function __construct(
-        private readonly ChildRepositoryInterface $childRepository,
+        private ChildRepositoryInterface $childRepository,
     ) {}
 
     public function handle(AddChildCommand $command): Child

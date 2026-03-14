@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useFamily } from '../hooks/useFamily';
 import { useChildren } from '../hooks/useChildren';
@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 export default function DashboardPage() {
   const { user } = useAuth();
   const familyId = user?.family_id ?? 0;
+  const navigate = useNavigate();
   const { data: family } = useFamily(familyId);
   const { data: children } = useChildren(familyId);
 
@@ -38,11 +39,12 @@ export default function DashboardPage() {
               </div>
             )}
             <div className="flex gap-2">
-              <Button variant="outline" asChild>
-                <Link to="/family/settings">家族設定</Link>
+              <Button variant="outline" onClick={() => navigate('/family/settings')}>
+                家族設定
               </Button>
-              <Button asChild>
-                <Link to="/books">本棚</Link>
+              <Button onClick={() => navigate('/books')}>本棚</Button>
+              <Button variant="outline" onClick={() => navigate('/records')}>
+                読み聞かせ記録
               </Button>
             </div>
           </CardContent>
