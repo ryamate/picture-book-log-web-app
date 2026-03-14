@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useState } from 'react';
 import type { LoginData } from '../api/auth';
@@ -12,18 +12,27 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [apiError, setApiError] = useState<string>('');
+  const fromPath = location.state?.from?.pathname as string | undefined;
+  const isFromInvitation = fromPath?.startsWith('/invitations/');
+  const invitationEmail = location.state?.invitationEmail as string | undefined;
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<LoginData>();
+  } = useForm<LoginData>({
+    defaultValues: {
+      email: invitationEmail ?? '',
+    },
+  });
 
   const onSubmit = async (data: LoginData) => {
     try {
       setApiError('');
       await login(data);
-      navigate('/');
+      const from = location.state?.from?.pathname || '/';
+      navigate(from, { replace: true });
     } catch (err) {
       if (err instanceof AxiosError && err.response?.status === 422) {
         setApiError(
@@ -43,6 +52,15 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {isFromInvitation && (
+              <p className="rounded-md bg-blue-50 p-3 text-sm text-blue-700">
+                招待を受け入れるにはログインしてください。アカウントをお持ちでない場合は
+                <Link to="/register" state={location.state} className="font-medium underline">
+                  新規登録
+                </Link>
+                してください。
+              </p>
+            )}
             {apiError && <p className="text-sm text-destructive">{apiError}</p>}
 
             <div className="space-y-2">
@@ -50,6 +68,8 @@ export default function LoginPage() {
               <Input
                 id="email"
                 type="email"
+                readOnly={!!invitationEmail}
+                className={invitationEmail ? 'bg-muted' : ''}
                 {...register('email', { required: 'メールアドレスを入力してください' })}
               />
               {errors.email && (
@@ -76,7 +96,7 @@ export default function LoginPage() {
 
           <p className="mt-4 text-center text-sm text-muted-foreground">
             アカウントをお持ちでない方は{' '}
-            <Link to="/register" className="text-primary underline">
+            <Link to="/register" state={location.state} className="text-primary underline">
               新規登録
             </Link>
           </p>
