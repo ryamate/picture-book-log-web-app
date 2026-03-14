@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class FamilyInvitation extends Model
 {
+    /** @var list<string> */
     protected $fillable = [
         'family_id',
         'invited_by',
@@ -19,6 +20,7 @@ class FamilyInvitation extends Model
         'expires_at',
     ];
 
+    /** @var array<string, string> */
     protected $casts = [
         'accepted_at' => 'datetime',
         'expires_at' => 'datetime',
