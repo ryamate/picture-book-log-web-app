@@ -33,8 +33,8 @@ class PictureBookController extends Controller
     /**
      * キーワードでGoogle Booksを検索する。 GET /api/google-books/search
      *
-     * @param Request $request リクエスト
-     * @param SearchGoogleBooksHandler $handler 検索ハンドラー
+     * @param  Request  $request  リクエスト
+     * @param  SearchGoogleBooksHandler  $handler  検索ハンドラー
      * @return JsonResponse
      */
     public function search(Request $request, SearchGoogleBooksHandler $handler)
@@ -63,9 +63,9 @@ class PictureBookController extends Controller
     /**
      * 家族の絵本一覧を取得する。 GET /api/families/{family}/picture-books
      *
-     * @param Request $request リクエスト
-     * @param Family $family 家族モデル
-     * @param ListBooksHandler $handler 一覧取得ハンドラー
+     * @param  Request  $request  リクエスト
+     * @param  Family  $family  家族モデル
+     * @param  ListBooksHandler  $handler  一覧取得ハンドラー
      * @return PictureBookCollection
      */
     public function index(Request $request, Family $family, ListBooksHandler $handler)
@@ -86,9 +86,9 @@ class PictureBookController extends Controller
     /**
      * 家族に新しい絵本を追加する。 POST /api/families/{family}/picture-books
      *
-     * @param StoreBookRequest $request 絵本登録リクエスト
-     * @param Family $family 家族モデル
-     * @param AddBookHandler $handler 絵本追加ハンドラー
+     * @param  StoreBookRequest  $request  絵本登録リクエスト
+     * @param  Family  $family  家族モデル
+     * @param  AddBookHandler  $handler  絵本追加ハンドラー
      * @return PictureBookResource|JsonResponse
      */
     public function store(StoreBookRequest $request, Family $family, AddBookHandler $handler)
@@ -117,8 +117,8 @@ class PictureBookController extends Controller
     /**
      * 絵本の詳細を取得する。 GET /api/families/{family}/picture-books/{pictureBook}
      *
-     * @param Family $family 家族モデル
-     * @param PictureBook $pictureBook 絵本モデル
+     * @param  Family  $family  家族モデル
+     * @param  PictureBook  $pictureBook  絵本モデル
      * @return PictureBookResource
      */
     public function show(Family $family, PictureBook $pictureBook)
@@ -131,10 +131,10 @@ class PictureBookController extends Controller
     /**
      * 絵本の読書情報を更新する。 PUT /api/families/{family}/picture-books/{pictureBook}
      *
-     * @param UpdateBookRequest $request 絵本更新リクエスト
-     * @param Family $family 家族モデル
-     * @param PictureBook $pictureBook 絵本モデル
-     * @param UpdateBookHandler $handler 絵本更新ハンドラー
+     * @param  UpdateBookRequest  $request  絵本更新リクエスト
+     * @param  Family  $family  家族モデル
+     * @param  PictureBook  $pictureBook  絵本モデル
+     * @param  UpdateBookHandler  $handler  絵本更新ハンドラー
      * @return PictureBookResource
      */
     public function update(UpdateBookRequest $request, Family $family, PictureBook $pictureBook, UpdateBookHandler $handler)
@@ -154,9 +154,9 @@ class PictureBookController extends Controller
     /**
      * 絵本を削除する。 DELETE /api/families/{family}/picture-books/{pictureBook}
      *
-     * @param Family $family 家族モデル
-     * @param PictureBook $pictureBook 絵本モデル
-     * @param RemoveBookHandler $handler 絵本削除ハンドラー
+     * @param  Family  $family  家族モデル
+     * @param  PictureBook  $pictureBook  絵本モデル
+     * @param  RemoveBookHandler  $handler  絵本削除ハンドラー
      * @return JsonResponse
      */
     public function destroy(Family $family, PictureBook $pictureBook, RemoveBookHandler $handler)

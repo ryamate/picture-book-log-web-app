@@ -18,9 +18,6 @@ final readonly class RemoveBookHandler
 
     /**
      * 指定された絵本を削除する。
-     *
-     * @param  RemoveBookCommand $command
-     * @return void
      */
     public function handle(RemoveBookCommand $command): void
     {

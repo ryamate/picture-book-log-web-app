@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Packages\Family\Domain\Entity;
 
 use Packages\Family\Domain\ValueObject\Birthday;
-use Packages\Shared\ValueObject\ChildId;
 use Packages\Family\Domain\ValueObject\ChildName;
+use Packages\Shared\ValueObject\ChildId;
 use Packages\Shared\ValueObject\FamilyId;
 
 final class Child

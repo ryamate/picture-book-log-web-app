@@ -1,0 +1,223 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\ChildResource\:\:\$birthday\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Resources/ChildResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\ChildResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/ChildResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\ChildResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/ChildResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\FamilyResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/FamilyResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\FamilyResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/FamilyResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\FamilyResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/FamilyResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\MemberResource\:\:\$email\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/MemberResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\MemberResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/MemberResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\MemberResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/MemberResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\PictureBookResource\:\:\$authors\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/PictureBookResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\PictureBookResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/PictureBookResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\PictureBookResource\:\:\$google_books_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/PictureBookResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\PictureBookResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/PictureBookResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\PictureBookResource\:\:\$isbn\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/PictureBookResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\PictureBookResource\:\:\$rating\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/PictureBookResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\PictureBookResource\:\:\$read_status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/PictureBookResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\PictureBookResource\:\:\$registeredByUser\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/PictureBookResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\PictureBookResource\:\:\$review\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/PictureBookResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\PictureBookResource\:\:\$thumbnail_url\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/PictureBookResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\PictureBookResource\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/PictureBookResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\ReadRecordResource\:\:\$children\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/ReadRecordResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\ReadRecordResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/ReadRecordResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\ReadRecordResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/ReadRecordResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\ReadRecordResource\:\:\$memo\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/ReadRecordResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\ReadRecordResource\:\:\$pictureBook\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Resources/ReadRecordResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\ReadRecordResource\:\:\$read_date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/ReadRecordResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\ReadRecordResource\:\:\$recordedByUser\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/ReadRecordResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\ReadRecordResource\:\:\$tags\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/ReadRecordResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\TagResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/TagResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\TagResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/TagResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\UserResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/UserResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\UserResource\:\:\$email\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/UserResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\UserResource\:\:\$family_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/UserResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\UserResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/UserResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\UserResource\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/UserResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/ReadLog/Infrastructure/Repository/EloquentReadRecordRepository.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$pivot\.$#'
+			identifier: property.notFound
+			count: 2
+			path: packages/ReadLog/Infrastructure/Repository/EloquentReadRecordRepository.php

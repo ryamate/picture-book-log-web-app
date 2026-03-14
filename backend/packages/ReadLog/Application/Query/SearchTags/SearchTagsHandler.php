@@ -14,13 +14,10 @@ final class SearchTagsHandler
 {
     /**
      * キーワードによるタグの前方一致検索を行う。
-     *
-     * @param  SearchTagsQuery  $query
-     * @return Collection
      */
     public function handle(SearchTagsQuery $query): Collection
     {
-        return Tag::where('name', 'like', $query->keyword . '%')
+        return Tag::where('name', 'like', $query->keyword.'%')
             ->limit($query->limit)
             ->get();
     }

@@ -19,18 +19,16 @@ interface FamilyOwnershipValidatorInterface
     /**
      * 指定された子どもが全員、指定の家族に属しているかを検証する。
      *
-     * @param FamilyId  $familyId 家族ID
-     * @param ChildId[] $childIds 子どもIDの配列
-     * @return bool
+     * @param  FamilyId  $familyId  家族ID
+     * @param  ChildId[]  $childIds  子どもIDの配列
      */
     public function allChildrenBelongToFamily(FamilyId $familyId, array $childIds): bool;
 
     /**
      * 指定された絵本が指定の家族に属しているかを検証する。
      *
-     * @param FamilyId      $familyId      家族ID
-     * @param PictureBookId $pictureBookId 絵本ID
-     * @return bool
+     * @param  FamilyId  $familyId  家族ID
+     * @param  PictureBookId  $pictureBookId  絵本ID
      */
     public function pictureBookBelongsToFamily(FamilyId $familyId, PictureBookId $pictureBookId): bool;
 }

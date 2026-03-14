@@ -35,8 +35,6 @@ class ReadRecord extends Model
 
     /**
      * この記録の絵本を取得する。
-     *
-     * @return BelongsTo
      */
     public function pictureBook(): BelongsTo
     {
@@ -45,8 +43,6 @@ class ReadRecord extends Model
 
     /**
      * この記録が属する家族を取得する。
-     *
-     * @return BelongsTo
      */
     public function family(): BelongsTo
     {
@@ -55,8 +51,6 @@ class ReadRecord extends Model
 
     /**
      * この記録を登録したユーザーを取得する。
-     *
-     * @return BelongsTo
      */
     public function recordedByUser(): BelongsTo
     {
@@ -65,8 +59,6 @@ class ReadRecord extends Model
 
     /**
      * この記録に関連する子どもを取得する。
-     *
-     * @return BelongsToMany
      */
     public function children(): BelongsToMany
     {
@@ -76,8 +68,6 @@ class ReadRecord extends Model
 
     /**
      * この記録に付けられたタグを取得する。
-     *
-     * @return BelongsToMany
      */
     public function tags(): BelongsToMany
     {

@@ -13,7 +13,6 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 final class ListBooksHandler
 {
     /**
-     * @param  ListBooksQuery      $query
      * @return LengthAwarePaginator ページネーション付きの絵本一覧
      */
     public function handle(ListBooksQuery $query): LengthAwarePaginator

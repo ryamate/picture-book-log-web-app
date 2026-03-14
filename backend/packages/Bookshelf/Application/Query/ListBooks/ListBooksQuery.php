@@ -10,17 +10,17 @@ namespace Packages\Bookshelf\Application\Query\ListBooks;
 final readonly class ListBooksQuery
 {
     /**
-     * @param int         $familyId 絵本一覧を取得する家族のID
-     * @param string|null $status   読書ステータスによる絞り込み（null許容）
-     * @param string      $sort     ソートカラム（created_at, title, rating）
-     * @param string      $order    ソート方向（asc または desc）
-     * @param int         $perPage  1ページあたりの表示件数
+     * @param  int  $familyId  絵本一覧を取得する家族のID
+     * @param  string|null  $status  読書ステータスによる絞り込み（null許容）
+     * @param  string  $sort  ソートカラム（created_at, title, rating）
+     * @param  string  $order  ソート方向（asc または desc）
+     * @param  int  $perPage  1ページあたりの表示件数
      */
     public function __construct(
-        public int     $familyId,
+        public int $familyId,
         public ?string $status = null,
-        public string  $sort = 'created_at',
-        public string  $order = 'desc',
-        public int     $perPage = 20,
+        public string $sort = 'created_at',
+        public string $order = 'desc',
+        public int $perPage = 20,
     ) {}
 }

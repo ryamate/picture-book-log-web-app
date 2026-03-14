@@ -44,7 +44,8 @@ export default function RecordEditPage() {
           tags: record.tags.map((t) => t.name),
         }}
         onSubmit={async (data) => {
-          const { picture_book_id: _, ...updateData } = data;
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { picture_book_id, ...updateData } = data;
           await updateRecord.mutateAsync(updateData);
           navigate(`/records/${numericRecordId}`);
         }}

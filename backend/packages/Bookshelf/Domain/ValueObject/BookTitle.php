@@ -14,7 +14,8 @@ use InvalidArgumentException;
 final class BookTitle
 {
     /**
-     * @param string $value タイトル文字列
+     * @param  string  $value  タイトル文字列
+     *
      * @throws InvalidArgumentException 空文字または500文字超の場合
      */
     public function __construct(private readonly string $value)
@@ -24,7 +25,6 @@ final class BookTitle
         }
     }
 
-    /** @return string */
     public function value(): string
     {
         return $this->value;

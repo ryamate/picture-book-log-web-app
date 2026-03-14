@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\ReadLog;
 
-use App\Models\Family;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;

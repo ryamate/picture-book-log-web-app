@@ -26,8 +26,7 @@ final class EloquentPictureBookRepository implements PictureBookRepositoryInterf
     /**
      * IDで絵本を検索する。
      *
-     * @param PictureBookId $id 絵本ID
-     * @return PictureBook|null
+     * @param  PictureBookId  $id  絵本ID
      */
     public function findById(PictureBookId $id): ?PictureBook
     {
@@ -39,9 +38,8 @@ final class EloquentPictureBookRepository implements PictureBookRepositoryInterf
     /**
      * 家族IDとGoogle Books IDで絵本を検索する。
      *
-     * @param FamilyId $familyId 家族ID
-     * @param string $googleBooksId Google Books ID
-     * @return PictureBook|null
+     * @param  FamilyId  $familyId  家族ID
+     * @param  string  $googleBooksId  Google Books ID
      */
     public function findByFamilyIdAndGoogleBooksId(FamilyId $familyId, string $googleBooksId): ?PictureBook
     {
@@ -55,8 +53,7 @@ final class EloquentPictureBookRepository implements PictureBookRepositoryInterf
     /**
      * 絵本を保存する（新規の場合は作成、既存の場合は更新）。
      *
-     * @param PictureBook $book 絵本エンティティ
-     * @return PictureBook
+     * @param  PictureBook  $book  絵本エンティティ
      */
     public function save(PictureBook $book): PictureBook
     {
@@ -88,8 +85,7 @@ final class EloquentPictureBookRepository implements PictureBookRepositoryInterf
     /**
      * IDで絵本を削除する。
      *
-     * @param PictureBookId $id 絵本ID
-     * @return void
+     * @param  PictureBookId  $id  絵本ID
      */
     public function delete(PictureBookId $id): void
     {
@@ -99,8 +95,7 @@ final class EloquentPictureBookRepository implements PictureBookRepositoryInterf
     /**
      * Eloquentモデルをドメインエンティティに変換する。
      *
-     * @param EloquentPictureBook $model Eloquentモデル
-     * @return PictureBook
+     * @param  EloquentPictureBook  $model  Eloquentモデル
      */
     private function toDomainEntity(EloquentPictureBook $model): PictureBook
     {

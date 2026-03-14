@@ -10,7 +10,7 @@ namespace Packages\ReadLog\Application\Command\DeleteRecord;
 final readonly class DeleteRecordCommand
 {
     /**
-     * @param int $recordId 読み聞かせ記録ID
+     * @param  int  $recordId  読み聞かせ記録ID
      */
     public function __construct(
         public int $recordId,

@@ -15,7 +15,6 @@ final class ListRecordsHandler
     /**
      * 読み聞かせ記録一覧を取得する。
      *
-     * @param  ListRecordsQuery     $query
      * @return LengthAwarePaginator ページネーション付きの読み聞かせ記録一覧
      */
     public function handle(ListRecordsQuery $query): LengthAwarePaginator

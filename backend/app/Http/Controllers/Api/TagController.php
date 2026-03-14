@@ -17,9 +17,8 @@ class TagController extends Controller
     /**
      * タグをキーワードで検索する（オートコンプリート用）。 GET /api/v1/tags
      *
-     * @param Request $request リクエスト
-     * @param SearchTagsHandler $handler タグ検索ハンドラー
-     * @return AnonymousResourceCollection
+     * @param  Request  $request  リクエスト
+     * @param  SearchTagsHandler  $handler  タグ検索ハンドラー
      */
     public function index(Request $request, SearchTagsHandler $handler): AnonymousResourceCollection
     {

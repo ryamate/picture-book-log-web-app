@@ -104,67 +104,56 @@ final class PictureBook
         $this->review = $review;
     }
 
-    /** @return ?PictureBookId */
     public function id(): ?PictureBookId
     {
         return $this->id;
     }
 
-    /** @return FamilyId */
     public function familyId(): FamilyId
     {
         return $this->familyId;
     }
 
-    /** @return UserId */
     public function registeredBy(): UserId
     {
         return $this->registeredBy;
     }
 
-    /** @return ?string */
     public function googleBooksId(): ?string
     {
         return $this->googleBooksId;
     }
 
-    /** @return ?Isbn */
     public function isbn(): ?Isbn
     {
         return $this->isbn;
     }
 
-    /** @return BookTitle */
     public function title(): BookTitle
     {
         return $this->title;
     }
 
-    /** @return Authors */
     public function authors(): Authors
     {
         return $this->authors;
     }
 
-    /** @return ?string */
     public function thumbnailUrl(): ?string
     {
         return $this->thumbnailUrl;
     }
 
-    /** @return ?Rating */
     public function rating(): ?Rating
     {
         return $this->rating;
     }
 
-    /** @return ReadStatus */
     public function readStatus(): ReadStatus
     {
         return $this->readStatus;
     }
 
-    /** @return ?string */
     public function review(): ?string
     {
         return $this->review;

@@ -14,8 +14,8 @@ use RuntimeException;
 final class InvalidOwnershipException extends RuntimeException
 {
     /**
-     * @param string $field   エラー対象のフィールド名
-     * @param string $message エラーメッセージ
+     * @param  string  $field  エラー対象のフィールド名
+     * @param  string  $message  エラーメッセージ
      */
     public function __construct(
         public readonly string $field,

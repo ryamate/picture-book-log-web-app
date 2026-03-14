@@ -6,8 +6,8 @@ namespace Packages\Family\Application\Command\UpdateFamily;
 
 use Packages\Family\Domain\Entity\Family;
 use Packages\Family\Domain\Repository\FamilyRepositoryInterface;
-use Packages\Shared\ValueObject\FamilyId;
 use Packages\Family\Domain\ValueObject\FamilyName;
+use Packages\Shared\ValueObject\FamilyId;
 
 final class UpdateFamilyHandler
 {

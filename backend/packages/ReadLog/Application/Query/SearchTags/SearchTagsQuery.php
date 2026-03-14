@@ -10,11 +10,11 @@ namespace Packages\ReadLog\Application\Query\SearchTags;
 final readonly class SearchTagsQuery
 {
     /**
-     * @param string $keyword 検索キーワード
-     * @param int    $limit   取得件数の上限
+     * @param  string  $keyword  検索キーワード
+     * @param  int  $limit  取得件数の上限
      */
     public function __construct(
         public string $keyword,
-        public int    $limit = 10,
+        public int $limit = 10,
     ) {}
 }

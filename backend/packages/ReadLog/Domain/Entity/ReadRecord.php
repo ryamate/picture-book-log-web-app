@@ -20,8 +20,8 @@ use Packages\Shared\ValueObject\UserId;
 final class ReadRecord
 {
     /**
-     * @param ChildReaction[] $childReactions
-     * @param TagId[] $tagIds
+     * @param  ChildReaction[]  $childReactions
+     * @param  TagId[]  $tagIds
      */
     private function __construct(
         private readonly ?ReadRecordId $id,
@@ -37,8 +37,8 @@ final class ReadRecord
     /**
      * 新しい読み聞かせ記録を作成する。
      *
-     * @param ChildReaction[] $childReactions
-     * @param TagId[] $tagIds
+     * @param  ChildReaction[]  $childReactions
+     * @param  TagId[]  $tagIds
      */
     public static function create(
         PictureBookId $pictureBookId,
@@ -58,8 +58,8 @@ final class ReadRecord
     /**
      * 永続化層から読み聞かせ記録を再構築する。
      *
-     * @param ChildReaction[] $childReactions
-     * @param TagId[] $tagIds
+     * @param  ChildReaction[]  $childReactions
+     * @param  TagId[]  $tagIds
      */
     public static function reconstruct(
         ReadRecordId $id,
@@ -80,8 +80,8 @@ final class ReadRecord
     /**
      * 記録を更新する。
      *
-     * @param ChildReaction[] $childReactions
-     * @param TagId[] $tagIds
+     * @param  ChildReaction[]  $childReactions
+     * @param  TagId[]  $tagIds
      */
     public function update(
         ReadDate $readDate,

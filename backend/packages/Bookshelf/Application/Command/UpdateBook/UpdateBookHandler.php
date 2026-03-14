@@ -23,8 +23,6 @@ final readonly class UpdateBookHandler
     /**
      * 既存の絵本のレビュー詳細を更新する。
      *
-     * @param  UpdateBookCommand $command
-     * @return PictureBook
      *
      * @throws DomainException 絵本が見つからない場合
      */
