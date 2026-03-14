@@ -65,3 +65,30 @@ tasks:
     desc: app コンテナに入る
     cmds:
       - docker compose exec app sh
+
+  lint:
+    desc: 全静的解析を実行（ESLint / PHPStan / Pint）
+    cmds:
+      - task: lint:eslint
+      - task: lint:phpstan
+      - task: lint:pint
+
+  lint:eslint:
+    desc: ESLint 実行
+    cmds:
+      - docker compose exec frontend npm run lint
+
+  lint:phpstan:
+    desc: PHPStan 実行
+    cmds:
+      - docker compose exec app vendor/bin/phpstan analyse --memory-limit=512M
+
+  lint:pint:
+    desc: Laravel Pint チェック
+    cmds:
+      - docker compose exec app vendor/bin/pint --test
+
+  lint:fix:
+    desc: 自動修正可能なスタイル違反を修正（Pint）
+    cmds:
+      - docker compose exec app vendor/bin/pint
