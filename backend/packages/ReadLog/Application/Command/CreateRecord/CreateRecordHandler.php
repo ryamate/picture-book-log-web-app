@@ -25,6 +25,12 @@ final readonly class CreateRecordHandler
         private TagRepositoryInterface $tagRepository,
     ) {}
 
+    /**
+     * 新しい読み聞かせ記録を作成する。
+     *
+     * @param  CreateRecordCommand  $command
+     * @return ReadRecord
+     */
     public function handle(CreateRecordCommand $command): ReadRecord
     {
         // タグの取得 or 新規作成

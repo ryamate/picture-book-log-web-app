@@ -12,6 +12,12 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
  */
 final class ListRecordsHandler
 {
+    /**
+     * 読み聞かせ記録一覧を取得する。
+     *
+     * @param  ListRecordsQuery     $query
+     * @return LengthAwarePaginator ページネーション付きの読み聞かせ記録一覧
+     */
     public function handle(ListRecordsQuery $query): LengthAwarePaginator
     {
         $builder = ReadRecord::with(['children', 'tags', 'pictureBook', 'recordedByUser'])

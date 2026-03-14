@@ -22,6 +22,12 @@ use Packages\Shared\ValueObject\UserId;
  */
 final class EloquentReadRecordRepository implements ReadRecordRepositoryInterface
 {
+    /**
+     * IDで読み聞かせ記録を検索する。
+     *
+     * @param ReadRecordId $id 読み聞かせ記録ID
+     * @return ReadRecord|null
+     */
     public function findById(ReadRecordId $id): ?ReadRecord
     {
         $model = EloquentReadRecord::with(['children', 'tags'])->find($id->value());
@@ -29,6 +35,12 @@ final class EloquentReadRecordRepository implements ReadRecordRepositoryInterfac
         return $model ? $this->toDomainEntity($model) : null;
     }
 
+    /**
+     * 読み聞かせ記録を保存する（新規の場合は作成、既存の場合は更新）。
+     *
+     * @param ReadRecord $record 読み聞かせ記録エンティティ
+     * @return ReadRecord
+     */
     public function save(ReadRecord $record): ReadRecord
     {
         if ($record->id() === null) {
@@ -61,11 +73,23 @@ final class EloquentReadRecordRepository implements ReadRecordRepositoryInterfac
         return $this->toDomainEntity($model->fresh(['children', 'tags']));
     }
 
+    /**
+     * IDで読み聞かせ記録を削除する。
+     *
+     * @param ReadRecordId $id 読み聞かせ記録ID
+     * @return void
+     */
     public function delete(ReadRecordId $id): void
     {
         EloquentReadRecord::destroy($id->value());
     }
 
+    /**
+     * Eloquentモデルをドメインエンティティに変換する。
+     *
+     * @param EloquentReadRecord $model Eloquentモデル
+     * @return ReadRecord
+     */
     private function toDomainEntity(EloquentReadRecord $model): ReadRecord
     {
         $childReactions = $model->children->map(function ($child) {

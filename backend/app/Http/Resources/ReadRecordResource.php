@@ -5,10 +5,17 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * 単一の読み聞かせ記録のAPIリソース。
+ *
+ * JSON構造: {id, picture_book: {id, title, thumbnail_url}, read_date, memo, children: [{id, name, reaction}], tags: [{id, name}], recorded_by: {id, name}, created_at}
+ */
 class ReadRecordResource extends JsonResource
 {
     /**
-     * @param Request $request
+     * リソースを配列に変換する。
+     *
+     * @param Request $request リクエスト
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array

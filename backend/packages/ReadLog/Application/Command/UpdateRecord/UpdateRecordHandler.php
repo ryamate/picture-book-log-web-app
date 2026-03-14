@@ -23,6 +23,12 @@ final readonly class UpdateRecordHandler
         private TagRepositoryInterface $tagRepository,
     ) {}
 
+    /**
+     * 読み聞かせ記録を更新する。
+     *
+     * @param  UpdateRecordCommand  $command
+     * @return ReadRecord
+     */
     public function handle(UpdateRecordCommand $command): ReadRecord
     {
         $record = $this->readRecordRepository->findById(new ReadRecordId($command->recordId));

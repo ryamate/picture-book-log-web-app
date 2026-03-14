@@ -6,10 +6,19 @@ namespace Packages\ReadLog\Domain\ValueObject;
 
 use InvalidArgumentException;
 
-final class ReadDate
+/**
+ * 読んだ日付を表す値オブジェクト。
+ *
+ * 過去または今日の日付のみ許可し、未来日を拒否する。
+ */
+final readonly class ReadDate
 {
-    private readonly string $value;
+    private string $value;
 
+    /**
+     * @param string $value Y-m-d形式の日付文字列
+     * @throws InvalidArgumentException 無効な日付または未来日の場合
+     */
     public function __construct(string $value)
     {
         $date = \DateTimeImmutable::createFromFormat('Y-m-d', $value);
@@ -27,6 +36,7 @@ final class ReadDate
         $this->value = $dateOnly->format('Y-m-d');
     }
 
+    /** @return string */
     public function value(): string
     {
         return $this->value;

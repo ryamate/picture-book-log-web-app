@@ -5,15 +5,26 @@ namespace App\Http\Requests;
 use App\Models\Child;
 use App\Models\PictureBook;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
+/**
+ * 読み聞かせ記録作成のバリデーションリクエスト。
+ */
 class StoreReadRecordRequest extends FormRequest
 {
+    /**
+     * リクエストの認可判定を行う。
+     *
+     * @return bool
+     */
     public function authorize(): bool
     {
         return true;
     }
 
     /**
+     * バリデーションルールを取得する。
+     *
      * @return array<string, mixed>
      */
     public function rules(): array
@@ -30,6 +41,14 @@ class StoreReadRecordRequest extends FormRequest
         ];
     }
 
+    /**
+     * カスタムバリデーションを追加する。
+     *
+     * 子どもと絵本がリクエスト対象の家族に属していることを検証する。
+     *
+     * @param Validator $validator バリデーター
+     * @return void
+     */
     public function withValidator($validator): void
     {
         $validator->after(function ($validator) {

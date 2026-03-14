@@ -14,6 +14,12 @@ use Packages\ReadLog\Domain\ValueObject\TagId;
  */
 final class EloquentTagRepository implements TagRepositoryInterface
 {
+    /**
+     * 名前でタグを検索する。
+     *
+     * @param string $name タグ名
+     * @return Tag|null
+     */
     public function findByName(string $name): ?Tag
     {
         $model = EloquentTag::where('name', $name)->first();
@@ -22,12 +28,14 @@ final class EloquentTagRepository implements TagRepositoryInterface
     }
 
     /**
-     * @param string[] $names
+     * タグ名の配列から既存タグの取得または新規作成を行う。
+     *
+     * @param string[] $names タグ名の配列
      * @return Tag[]
      */
     public function findOrCreateByNames(array $names): array
     {
-        return array_map(function (string $name) {
+        return array_map(static function (string $name) {
             $model = EloquentTag::firstOrCreate(['name' => trim($name)]);
 
             return Tag::reconstruct(new TagId($model->id), $model->name);

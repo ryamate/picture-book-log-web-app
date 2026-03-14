@@ -5,15 +5,23 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\TagResource;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Packages\ReadLog\Application\Query\SearchTags\SearchTagsHandler;
 use Packages\ReadLog\Application\Query\SearchTags\SearchTagsQuery;
 
+/**
+ * タグ検索のAPIコントローラー。
+ */
 class TagController extends Controller
 {
     /**
-     * タグをキーワードで検索する（オートコンプリート用）。
+     * タグをキーワードで検索する（オートコンプリート用）。 GET /api/v1/tags
+     *
+     * @param Request $request リクエスト
+     * @param SearchTagsHandler $handler タグ検索ハンドラー
+     * @return AnonymousResourceCollection
      */
-    public function index(Request $request, SearchTagsHandler $handler)
+    public function index(Request $request, SearchTagsHandler $handler): AnonymousResourceCollection
     {
         $request->validate(['q' => ['required', 'string', 'min:1']]);
 

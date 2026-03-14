@@ -4,15 +4,26 @@ namespace App\Http\Requests;
 
 use App\Models\Child;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
+/**
+ * 読み聞かせ記録更新のバリデーションリクエスト。
+ */
 class UpdateReadRecordRequest extends FormRequest
 {
+    /**
+     * リクエストの認可判定を行う。
+     *
+     * @return bool
+     */
     public function authorize(): bool
     {
         return true;
     }
 
     /**
+     * バリデーションルールを取得する。
+     *
      * @return array<string, mixed>
      */
     public function rules(): array
@@ -28,7 +39,15 @@ class UpdateReadRecordRequest extends FormRequest
         ];
     }
 
-    public function withValidator($validator): void
+    /**
+     * カスタムバリデーションを追加する。
+     *
+     * 子どもがリクエスト対象の家族に属していることを検証する。
+     *
+     * @param Validator $validator バリデーター
+     * @return void
+     */
+    public function withValidator(Validator $validator): void
     {
         $validator->after(function ($validator) {
             $family = $this->route('family');

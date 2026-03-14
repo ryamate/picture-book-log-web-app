@@ -64,6 +64,11 @@ class PictureBook extends Model
         return $this->belongsTo(User::class, 'registered_by');
     }
 
+    /**
+     * この絵本の読み聞かせ記録を取得する。
+     *
+     * @return HasMany
+     */
     public function readRecords(): HasMany
     {
         return $this->hasMany(ReadRecord::class);

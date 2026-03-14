@@ -7,17 +7,20 @@ namespace Packages\ReadLog\Application\Command\UpdateRecord;
 /**
  * 読み聞かせ記録更新コマンドDTO。
  */
-final class UpdateRecordCommand
+final readonly class UpdateRecordCommand
 {
     /**
-     * @param array<int, string|null> $childReactions [child_id => reaction]
-     * @param string[] $tags タグ名の配列
+     * @param int                      $recordId        読み聞かせ記録ID
+     * @param string                   $readDate        読み聞かせ日
+     * @param string|null              $memo            メモ
+     * @param array<int, string|null>  $childReactions  子どもの反応 [child_id => reaction]
+     * @param string[]                 $tags            タグ名の配列
      */
     public function __construct(
-        public readonly int $recordId,
-        public readonly string $readDate,
-        public readonly ?string $memo,
-        public readonly array $childReactions,
-        public readonly array $tags,
+        public int     $recordId,
+        public string  $readDate,
+        public ?string $memo,
+        public array   $childReactions,
+        public array   $tags,
     ) {}
 }

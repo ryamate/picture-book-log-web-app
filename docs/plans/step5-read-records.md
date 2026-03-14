@@ -124,6 +124,7 @@ backend/packages/ReadLog/
 │   │   ├── ReadRecord.php
 │   │   └── Tag.php
 │   ├── ValueObject/
+│   │   ├── ReadRecordId.php
 │   │   ├── ReadDate.php
 │   │   ├── Reaction.php
 │   │   ├── ChildReaction.php     # child_id + reaction のペア
@@ -133,8 +134,10 @@ backend/packages/ReadLog/
 │       └── TagRepositoryInterface.php
 ```
 
-> `ReadRecordId` は不要（`ReadRecord` Entity の ID は共有カーネルに含めず、Entity 内で `?int` として管理）。
+> `ReadRecordId` は共有カーネルには含めず、ReadLog ドメイン内（`packages/ReadLog/Domain/ValueObject/ReadRecordId.php`）で定義する。他コンテキストから参照されることがないため。
 > `FamilyId`, `UserId`, `ChildId`, `PictureBookId` は共有カーネル（`packages/Shared/ValueObject/`）から参照。詳細は rebuild-plan の「コンテキスト間の Value Object 共有方針」を参照。
+>
+> **前提条件**: `FamilyId` と `ChildId` は現在 `packages/Family/Domain/ValueObject/` に存在する。Step 5 の実装前に `packages/Shared/ValueObject/` への移動が完了していること（`refactor/move-shared-value-objects` ブランチで対応中）。移動が未完了の場合、ReadLog コンテキストから Family コンテキストの ValueObject を直接参照することになり、コンテキスト間の依存方向が不適切になる。
 
 ### Domain Entity: `ReadRecord`
 
@@ -773,7 +776,8 @@ class ReadRecordPolicy
 ```
 
 Controller では Step 4 と同様に:
-- `index`, `store`: `FamilyPolicy::view` で家族所属チェック
+- `index`: `FamilyPolicy::view` で家族所属チェック（読み取り操作）
+- `store`: `FamilyPolicy::update` で家族所属チェック（書き込み操作。Step 4 の `PictureBookController::store` と同じパターン）
 - `show`, `update`, `destroy`: `ReadRecordPolicy::manage` + `scopeBindings` で検証
 
 ---
@@ -848,9 +852,14 @@ backend/tests/Feature/
 
 ## 5-9. フロントエンド — 型定義・API 関数
 
-### `src/types/record.ts`
+### `src/api/records.ts`
+
+> **既存パターンとの整合**: 現在のプロジェクトでは型定義を API ファイル内にインラインで定義している（例: `src/api/books.ts` に `PictureBook`, `GoogleBook` 等）。`src/types/` ディレクトリは存在しない。そのため、型定義も `src/api/records.ts` 内に定義する。
 
 ```typescript
+import apiClient from './client';
+import { PaginatedResponse } from './books';
+
 export interface ChildReaction {
   child_id: number;
   name: string;         // 表示用
@@ -879,12 +888,6 @@ export interface CreateRecordData {
   children: { child_id: number; reaction?: string }[];
   tags?: string[];
 }
-```
-
-### `src/api/records.ts`
-
-```typescript
-import apiClient from './client';
 
 export const getRecords = (familyId: number, params?: {
   child_id?: number;
@@ -989,20 +992,25 @@ export const useSearchTags = (query: string) => {
 
 ```typescript
 <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
-  <Route path="/" element={<DashboardPage />} />
   <Route path="/family/create" element={<CreateFamilyPage />} />
-  <Route path="/family/settings" element={<FamilySettingsPage />} />
-  <Route path="/books/search" element={<BookSearchPage />} />
-  <Route path="/books" element={<BookshelfPage />} />
-  <Route path="/books/:bookId" element={<BookDetailPage />} />
 
-  {/* Step 5 で追加 */}
-  <Route path="/records" element={<RecordListPage />} />
-  <Route path="/records/new" element={<RecordCreatePage />} />
-  <Route path="/records/:recordId" element={<RecordDetailPage />} />
-  <Route path="/records/:recordId/edit" element={<RecordEditPage />} />
+  <Route element={<RequireFamilyRoute><Outlet /></RequireFamilyRoute>}>
+    <Route path="/" element={<DashboardPage />} />
+    <Route path="/family/settings" element={<FamilySettingsPage />} />
+    <Route path="/books/search" element={<BookSearchPage />} />
+    <Route path="/books" element={<BookshelfPage />} />
+    <Route path="/books/:bookId" element={<BookDetailPage />} />
+
+    {/* Step 5 で追加 */}
+    <Route path="/records" element={<RecordListPage />} />
+    <Route path="/records/new" element={<RecordCreatePage />} />
+    <Route path="/records/:recordId" element={<RecordDetailPage />} />
+    <Route path="/records/:recordId/edit" element={<RecordEditPage />} />
+  </Route>
 </Route>
 ```
+
+> **注意**: 現在の `App.tsx` では `RequireFamilyRoute` で家族所属チェックをラップしている。records は `familyId` が必須の家族スコープ機能のため、`RequireFamilyRoute` の内側に配置する必要がある。`/family/create` のみ `RequireFamilyRoute` の外に配置される（家族未作成ユーザー用）。
 
 ### RecordCreatePage + RecordForm
 
@@ -1111,8 +1119,8 @@ const { data: records } = useRecords(familyId, { picture_book_id: bookId });
 | 14 | React 記録作成フロー | RecordCreatePage で全フィールド入力 → 送信 | 一覧に反映 |
 | 15 | React 記録編集フロー | RecordEditPage で既存データ表示 → 更新 → 詳細ページへリダイレクト | 更新が反映 |
 | 16 | React タグ入力 | タグ入力でサジェスト表示 → 選択 | 正しく紐付け |
-| 16 | React BookDetailPage | 絵本詳細に記録セクション表示 | 記録一覧・追加ボタン |
-| 17 | Feature テスト | `task test` | 全テスト通過 |
+| 17 | React BookDetailPage | 絵本詳細に記録セクション表示 | 記録一覧・追加ボタン |
+| 18 | Feature テスト | `task test` | 全テスト通過 |
 
 ---
 
@@ -1150,7 +1158,8 @@ const { data: records } = useRecords(familyId, { picture_book_id: bookId });
 
 ## 注意事項・判断メモ
 
-- **Value Object の共有**: `FamilyId`, `UserId`, `ChildId`, `PictureBookId` は共有カーネル（`packages/Shared/ValueObject/`）から参照。rebuild-plan の「コンテキスト間の Value Object 共有方針」を参照
+- **Value Object の共有**: `FamilyId`, `UserId`, `ChildId`, `PictureBookId` は共有カーネル（`packages/Shared/ValueObject/`）から参照。rebuild-plan の「コンテキスト間の Value Object 共有方針」を参照。**前提**: `FamilyId`, `ChildId` の Shared への移動（`refactor/move-shared-value-objects` ブランチ）が完了していること
+- **ReadRecordId の配置**: 共有カーネルではなく ReadLog ドメイン内（`packages/ReadLog/Domain/ValueObject/`）に定義。他コンテキストから参照されないため
 - **reaction は自由テキスト**: 定義済み選択肢ではなく string で保存。フロントエンドでのサジェストは Phase 2 で検討
 - **tags はグローバルスコープ**: rebuild-plan のスキーマに準拠。家族スコープではない
 - **children は最低1人必須**: 「誰に読んだか」が記録の核心情報。子どもなしの記録は許可しない

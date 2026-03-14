@@ -24,6 +24,11 @@ class Family extends Model
         return $this->hasMany(PictureBook::class);
     }
 
+    /**
+     * この家族の読み聞かせ記録を取得する。
+     *
+     * @return HasMany
+     */
     public function readRecords(): HasMany
     {
         return $this->hasMany(ReadRecord::class);

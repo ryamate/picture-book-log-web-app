@@ -11,6 +11,12 @@ use App\Models\ReadRecord;
  */
 final class GetRecordHandler
 {
+    /**
+     * 読み聞かせ記録の詳細をリレーション含めて取得する。
+     *
+     * @param  GetRecordQuery  $query
+     * @return ReadRecord|null
+     */
     public function handle(GetRecordQuery $query): ?ReadRecord
     {
         return ReadRecord::with(['children', 'tags', 'pictureBook', 'recordedByUser'])

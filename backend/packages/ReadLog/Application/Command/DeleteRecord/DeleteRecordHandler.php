@@ -16,6 +16,12 @@ final readonly class DeleteRecordHandler
         private ReadRecordRepositoryInterface $readRecordRepository,
     ) {}
 
+    /**
+     * 読み聞かせ記録を削除する。
+     *
+     * @param  DeleteRecordCommand  $command
+     * @return void
+     */
     public function handle(DeleteRecordCommand $command): void
     {
         $this->readRecordRepository->delete(new ReadRecordId($command->recordId));

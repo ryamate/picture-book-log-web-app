@@ -19,6 +19,11 @@ class Child extends Model
         return $this->belongsTo(Family::class);
     }
 
+    /**
+     * この子どもの読み聞かせ記録を取得する。
+     *
+     * @return BelongsToMany
+     */
     public function readRecords(): BelongsToMany
     {
         return $this->belongsToMany(ReadRecord::class, 'child_read_record')

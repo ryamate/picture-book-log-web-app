@@ -6,18 +6,29 @@ namespace Packages\ReadLog\Domain\ValueObject;
 
 use Packages\Shared\ValueObject\ChildId;
 
-final class ChildReaction
+/**
+ * 子どもとリアクションのペアを表す値オブジェクト。
+ *
+ * 読み聞かせ記録における、特定の子どものリアクションを保持する。
+ */
+final readonly class ChildReaction
 {
+    /**
+     * @param ChildId $childId 子どもID
+     * @param Reaction|null $reaction リアクション（任意）
+     */
     public function __construct(
-        private readonly ChildId $childId,
-        private readonly ?Reaction $reaction,
+        private ChildId   $childId,
+        private ?Reaction $reaction,
     ) {}
 
+    /** @return ChildId */
     public function childId(): ChildId
     {
         return $this->childId;
     }
 
+    /** @return Reaction|null */
     public function reaction(): ?Reaction
     {
         return $this->reaction;
