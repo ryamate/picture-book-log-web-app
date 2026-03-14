@@ -2,10 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Child;
-use App\Models\PictureBook;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Validator;
 
 /**
  * 読み聞かせ記録作成のバリデーションリクエスト。
@@ -39,39 +36,5 @@ class StoreReadRecordRequest extends FormRequest
             'tags' => ['nullable', 'array'],
             'tags.*' => ['string', 'max:50'],
         ];
-    }
-
-    /**
-     * カスタムバリデーションを追加する。
-     *
-     * 子どもと絵本がリクエスト対象の家族に属していることを検証する。
-     *
-     * @param Validator $validator バリデーター
-     * @return void
-     */
-    public function withValidator($validator): void
-    {
-        $validator->after(function ($validator) {
-            $family = $this->route('family');
-
-            // 子どもが家族に属しているか
-            $childIds = collect($this->children)->pluck('child_id');
-            $validChildCount = Child::where('family_id', $family->id)
-                ->whereIn('id', $childIds)
-                ->count();
-            if ($validChildCount !== $childIds->count()) {
-                $validator->errors()->add('children', 'Invalid child specified.');
-            }
-
-            // 絵本が家族に属しているか
-            if ($this->picture_book_id) {
-                $bookExists = PictureBook::where('id', $this->picture_book_id)
-                    ->where('family_id', $family->id)
-                    ->exists();
-                if (! $bookExists) {
-                    $validator->errors()->add('picture_book_id', 'Invalid picture book specified.');
-                }
-            }
-        });
     }
 }

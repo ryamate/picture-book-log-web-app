@@ -11,6 +11,7 @@ use App\Models\Family;
 use App\Models\ReadRecord;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Packages\ReadLog\Application\Command\CreateRecord\CreateRecordCommand;
 use Packages\ReadLog\Application\Command\CreateRecord\CreateRecordHandler;
 use Packages\ReadLog\Application\Command\DeleteRecord\DeleteRecordCommand;
@@ -19,6 +20,7 @@ use Packages\ReadLog\Application\Command\UpdateRecord\UpdateRecordCommand;
 use Packages\ReadLog\Application\Command\UpdateRecord\UpdateRecordHandler;
 use Packages\ReadLog\Application\Query\GetRecord\GetRecordHandler;
 use Packages\ReadLog\Application\Query\GetRecord\GetRecordQuery;
+use Packages\ReadLog\Application\Exception\InvalidOwnershipException;
 use Packages\ReadLog\Application\Query\ListRecords\ListRecordsHandler;
 use Packages\ReadLog\Application\Query\ListRecords\ListRecordsQuery;
 
@@ -70,15 +72,19 @@ class ReadRecordController extends Controller
             $childReactions[$child['child_id']] = $child['reaction'] ?? null;
         }
 
-        $record = $handler->handle(new CreateRecordCommand(
-            pictureBookId: $request->validated('picture_book_id'),
-            familyId: $family->id,
-            userId: $request->user()->id,
-            readDate: $request->validated('read_date'),
-            memo: $request->validated('memo'),
-            childReactions: $childReactions,
-            tags: $request->validated('tags') ?? [],
-        ));
+        try {
+            $record = $handler->handle(new CreateRecordCommand(
+                pictureBookId: $request->validated('picture_book_id'),
+                familyId: $family->id,
+                userId: $request->user()->id,
+                readDate: $request->validated('read_date'),
+                memo: $request->validated('memo'),
+                childReactions: $childReactions,
+                tags: $request->validated('tags') ?? [],
+            ));
+        } catch (InvalidOwnershipException $e) {
+            throw ValidationException::withMessages([$e->field => $e->getMessage()]);
+        }
 
         $eloquentRecord = ReadRecord::with(['children', 'tags', 'pictureBook', 'recordedByUser'])
             ->find($record->id()->value());
@@ -122,13 +128,17 @@ class ReadRecordController extends Controller
             $childReactions[$child['child_id']] = $child['reaction'] ?? null;
         }
 
-        $handler->handle(new UpdateRecordCommand(
-            recordId: $readRecord->id,
-            readDate: $request->validated('read_date'),
-            memo: $request->validated('memo'),
-            childReactions: $childReactions,
-            tags: $request->validated('tags') ?? [],
-        ));
+        try {
+            $handler->handle(new UpdateRecordCommand(
+                recordId: $readRecord->id,
+                readDate: $request->validated('read_date'),
+                memo: $request->validated('memo'),
+                childReactions: $childReactions,
+                tags: $request->validated('tags') ?? [],
+            ));
+        } catch (InvalidOwnershipException $e) {
+            throw ValidationException::withMessages([$e->field => $e->getMessage()]);
+        }
 
         $updatedRecord = ReadRecord::with(['children', 'tags', 'pictureBook', 'recordedByUser'])
             ->find($readRecord->id);

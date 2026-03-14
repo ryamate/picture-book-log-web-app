@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Packages\ReadLog\Application\Command\UpdateRecord;
 
+use Packages\ReadLog\Application\Exception\InvalidOwnershipException;
+use Packages\ReadLog\Application\Validator\FamilyOwnershipValidatorInterface;
 use Packages\ReadLog\Domain\Entity\ReadRecord;
 use Packages\ReadLog\Domain\Repository\ReadRecordRepositoryInterface;
 use Packages\ReadLog\Domain\Repository\TagRepositoryInterface;
@@ -21,6 +23,7 @@ final readonly class UpdateRecordHandler
     public function __construct(
         private ReadRecordRepositoryInterface $readRecordRepository,
         private TagRepositoryInterface $tagRepository,
+        private FamilyOwnershipValidatorInterface $ownershipValidator,
     ) {}
 
     /**
@@ -32,6 +35,12 @@ final readonly class UpdateRecordHandler
     public function handle(UpdateRecordCommand $command): ReadRecord
     {
         $record = $this->readRecordRepository->findById(new ReadRecordId($command->recordId));
+
+        // 子どもが家族に属しているか検証
+        $childIds = array_map(fn (int $id) => new ChildId($id), array_keys($command->childReactions));
+        if (! $this->ownershipValidator->allChildrenBelongToFamily($record->familyId(), $childIds)) {
+            throw new InvalidOwnershipException('children', 'Invalid child specified.');
+        }
 
         // タグの取得 or 新規作成
         $tags = ! empty($command->tags)

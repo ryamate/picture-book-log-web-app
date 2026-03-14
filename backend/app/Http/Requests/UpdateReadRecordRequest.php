@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Child;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Validator;
 
 /**
  * 読み聞かせ記録更新のバリデーションリクエスト。
@@ -37,29 +35,5 @@ class UpdateReadRecordRequest extends FormRequest
             'tags' => ['nullable', 'array'],
             'tags.*' => ['string', 'max:50'],
         ];
-    }
-
-    /**
-     * カスタムバリデーションを追加する。
-     *
-     * 子どもがリクエスト対象の家族に属していることを検証する。
-     *
-     * @param Validator $validator バリデーター
-     * @return void
-     */
-    public function withValidator(Validator $validator): void
-    {
-        $validator->after(function ($validator) {
-            $family = $this->route('family');
-
-            // 子どもが家族に属しているか
-            $childIds = collect($this->children)->pluck('child_id');
-            $validChildCount = Child::where('family_id', $family->id)
-                ->whereIn('id', $childIds)
-                ->count();
-            if ($validChildCount !== $childIds->count()) {
-                $validator->errors()->add('children', 'Invalid child specified.');
-            }
-        });
     }
 }
