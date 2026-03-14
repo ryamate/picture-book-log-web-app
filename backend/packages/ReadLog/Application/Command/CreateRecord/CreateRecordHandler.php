@@ -30,9 +30,6 @@ final readonly class CreateRecordHandler
 
     /**
      * 新しい読み聞かせ記録を作成する。
-     *
-     * @param  CreateRecordCommand  $command
-     * @return ReadRecord
      */
     public function handle(CreateRecordCommand $command): ReadRecord
     {

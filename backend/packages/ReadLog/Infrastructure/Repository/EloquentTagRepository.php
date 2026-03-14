@@ -17,8 +17,7 @@ final class EloquentTagRepository implements TagRepositoryInterface
     /**
      * 名前でタグを検索する。
      *
-     * @param string $name タグ名
-     * @return Tag|null
+     * @param  string  $name  タグ名
      */
     public function findByName(string $name): ?Tag
     {
@@ -30,7 +29,7 @@ final class EloquentTagRepository implements TagRepositoryInterface
     /**
      * タグ名の配列から既存タグの取得または新規作成を行う。
      *
-     * @param string[] $names タグ名の配列
+     * @param  string[]  $names  タグ名の配列
      * @return Tag[]
      */
     public function findOrCreateByNames(array $names): array

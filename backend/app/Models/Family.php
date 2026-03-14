@@ -26,8 +26,6 @@ class Family extends Model
 
     /**
      * この家族の読み聞かせ記録を取得する。
-     *
-     * @return HasMany
      */
     public function readRecords(): HasMany
     {

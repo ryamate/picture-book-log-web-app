@@ -25,8 +25,7 @@ final class EloquentReadRecordRepository implements ReadRecordRepositoryInterfac
     /**
      * IDで読み聞かせ記録を検索する。
      *
-     * @param ReadRecordId $id 読み聞かせ記録ID
-     * @return ReadRecord|null
+     * @param  ReadRecordId  $id  読み聞かせ記録ID
      */
     public function findById(ReadRecordId $id): ?ReadRecord
     {
@@ -38,8 +37,7 @@ final class EloquentReadRecordRepository implements ReadRecordRepositoryInterfac
     /**
      * 読み聞かせ記録を保存する（新規の場合は作成、既存の場合は更新）。
      *
-     * @param ReadRecord $record 読み聞かせ記録エンティティ
-     * @return ReadRecord
+     * @param  ReadRecord  $record  読み聞かせ記録エンティティ
      */
     public function save(ReadRecord $record): ReadRecord
     {
@@ -76,8 +74,7 @@ final class EloquentReadRecordRepository implements ReadRecordRepositoryInterfac
     /**
      * IDで読み聞かせ記録を削除する。
      *
-     * @param ReadRecordId $id 読み聞かせ記録ID
-     * @return void
+     * @param  ReadRecordId  $id  読み聞かせ記録ID
      */
     public function delete(ReadRecordId $id): void
     {
@@ -87,8 +84,7 @@ final class EloquentReadRecordRepository implements ReadRecordRepositoryInterfac
     /**
      * Eloquentモデルをドメインエンティティに変換する。
      *
-     * @param EloquentReadRecord $model Eloquentモデル
-     * @return ReadRecord
+     * @param  EloquentReadRecord  $model  Eloquentモデル
      */
     private function toDomainEntity(EloquentReadRecord $model): ReadRecord
     {

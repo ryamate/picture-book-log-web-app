@@ -14,21 +14,19 @@ use Packages\Shared\ValueObject\ChildId;
 final readonly class ChildReaction
 {
     /**
-     * @param ChildId $childId 子どもID
-     * @param Reaction|null $reaction リアクション（任意）
+     * @param  ChildId  $childId  子どもID
+     * @param  Reaction|null  $reaction  リアクション（任意）
      */
     public function __construct(
-        private ChildId   $childId,
+        private ChildId $childId,
         private ?Reaction $reaction,
     ) {}
 
-    /** @return ChildId */
     public function childId(): ChildId
     {
         return $this->childId;
     }
 
-    /** @return Reaction|null */
     public function reaction(): ?Reaction
     {
         return $this->reaction;

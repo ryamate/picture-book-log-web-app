@@ -20,8 +20,6 @@ class Tag extends Model
 
     /**
      * このタグが付けられた読み聞かせ記録を取得する。
-     *
-     * @return BelongsToMany
      */
     public function readRecords(): BelongsToMany
     {

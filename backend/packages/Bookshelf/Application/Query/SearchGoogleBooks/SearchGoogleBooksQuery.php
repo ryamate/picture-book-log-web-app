@@ -10,13 +10,13 @@ namespace Packages\Bookshelf\Application\Query\SearchGoogleBooks;
 final readonly class SearchGoogleBooksQuery
 {
     /**
-     * @param string $keyword    検索キーワード
-     * @param int    $startIndex ページネーションのオフセット
-     * @param int    $maxResults 返却する最大件数
+     * @param  string  $keyword  検索キーワード
+     * @param  int  $startIndex  ページネーションのオフセット
+     * @param  int  $maxResults  返却する最大件数
      */
     public function __construct(
         public string $keyword,
-        public int    $startIndex = 0,
-        public int    $maxResults = 20,
+        public int $startIndex = 0,
+        public int $maxResults = 20,
     ) {}
 }

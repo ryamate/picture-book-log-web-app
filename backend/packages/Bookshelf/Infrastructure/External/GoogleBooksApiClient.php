@@ -20,10 +20,11 @@ final class GoogleBooksApiClient
     /**
      * キーワードでGoogle Booksを検索する。
      *
-     * @param string $keyword 検索キーワード
-     * @param int $startIndex 取得開始位置
-     * @param int $maxResults 最大取得件数
+     * @param  string  $keyword  検索キーワード
+     * @param  int  $startIndex  取得開始位置
+     * @param  int  $maxResults  最大取得件数
      * @return array{total_items: int, items: array<int, array>}
+     *
      * @throws ConnectionException
      * @throws RequestException
      */
@@ -52,7 +53,7 @@ final class GoogleBooksApiClient
     /**
      * APIの生レスポンスを正規化された構造に変換する。
      *
-     * @param array $data APIレスポンスデータ
+     * @param  array  $data  APIレスポンスデータ
      * @return array{total_items: int, items: array<int, array>}
      */
     private function transformResponse(array $data): array
@@ -69,7 +70,7 @@ final class GoogleBooksApiClient
     /**
      * 単一の書籍アイテムを正規化された配列に変換する。
      *
-     * @param array $item 書籍アイテム
+     * @param  array  $item  書籍アイテム
      * @return array{google_books_id: string, title: string, authors: array, isbn: ?string, thumbnail_url: ?string, published_date: ?string, description: ?string, page_count: ?int}
      */
     private function transformItem(array $item): array
@@ -98,9 +99,8 @@ final class GoogleBooksApiClient
     /**
      * 業界識別子から指定された種類のISBNを抽出する。
      *
-     * @param array $identifiers 業界識別子の配列
-     * @param string $type ISBNの種類（例: 'ISBN_13', 'ISBN_10'）
-     * @return string|null
+     * @param  array  $identifiers  業界識別子の配列
+     * @param  string  $type  ISBNの種類（例: 'ISBN_13', 'ISBN_10'）
      */
     private function extractIsbn(array $identifiers, string $type): ?string
     {

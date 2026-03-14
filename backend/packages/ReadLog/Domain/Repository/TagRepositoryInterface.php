@@ -14,15 +14,14 @@ interface TagRepositoryInterface
     /**
      * 名前でタグを検索する。
      *
-     * @param  string  $name タグ名
-     * @return Tag|null
+     * @param  string  $name  タグ名
      */
     public function findByName(string $name): ?Tag;
 
     /**
      * タグ名の配列から、既存タグを取得または新規作成して返す。
      *
-     * @param  string[]  $names タグ名の配列
+     * @param  string[]  $names  タグ名の配列
      * @return Tag[]
      */
     public function findOrCreateByNames(array $names): array;

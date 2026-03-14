@@ -7,8 +7,8 @@ namespace Packages\Family\Infrastructure\Repository;
 use App\Models\Family as EloquentFamily;
 use Packages\Family\Domain\Entity\Family;
 use Packages\Family\Domain\Repository\FamilyRepositoryInterface;
-use Packages\Shared\ValueObject\FamilyId;
 use Packages\Family\Domain\ValueObject\FamilyName;
+use Packages\Shared\ValueObject\FamilyId;
 
 final class EloquentFamilyRepository implements FamilyRepositoryInterface
 {

@@ -18,9 +18,6 @@ final readonly class DeleteRecordHandler
 
     /**
      * 読み聞かせ記録を削除する。
-     *
-     * @param  DeleteRecordCommand  $command
-     * @return void
      */
     public function handle(DeleteRecordCommand $command): void
     {

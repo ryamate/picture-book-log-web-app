@@ -15,7 +15,7 @@ class PictureBookResource extends JsonResource
     /**
      * リソースを配列に変換する。
      *
-     * @param Request $request リクエスト
+     * @param  Request  $request  リクエスト
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array

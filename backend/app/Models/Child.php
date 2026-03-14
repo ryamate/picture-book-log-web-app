@@ -21,8 +21,6 @@ class Child extends Model
 
     /**
      * この子どもの読み聞かせ記録を取得する。
-     *
-     * @return BelongsToMany
      */
     public function readRecords(): BelongsToMany
     {

@@ -32,7 +32,7 @@ final class LoginHandler
 
         $eloquentUser = EloquentUser::where('email', $command->email)->first();
 
-        if (!Hash::check($command->password, $eloquentUser->password)) {
+        if (! Hash::check($command->password, $eloquentUser->password)) {
             throw ValidationException::withMessages([
                 'email' => [__('auth.failed')],
             ]);

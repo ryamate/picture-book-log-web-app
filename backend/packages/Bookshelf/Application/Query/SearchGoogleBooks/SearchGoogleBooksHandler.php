@@ -18,8 +18,8 @@ final readonly class SearchGoogleBooksHandler
     ) {}
 
     /**
-     * @param SearchGoogleBooksQuery $query
      * @return array Google Books APIからの検索結果
+     *
      * @throws ConnectionException
      * @throws RequestException
      */

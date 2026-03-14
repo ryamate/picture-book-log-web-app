@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 /**
@@ -18,10 +17,9 @@ class PictureBookCollection extends ResourceCollection
     /**
      * レスポンスに含めるページネーションメタデータをカスタマイズする。
      *
-     * @param mixed $request リクエスト
-     * @param array $paginated ページネーション情報
-     * @param array $default デフォルト値
-     * @return array
+     * @param  mixed  $request  リクエスト
+     * @param  array  $paginated  ページネーション情報
+     * @param  array  $default  デフォルト値
      */
     public function paginationInformation($request, $paginated, $default): array
     {

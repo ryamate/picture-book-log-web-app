@@ -11,8 +11,6 @@ class StoreReadRecordRequest extends FormRequest
 {
     /**
      * リクエストの認可判定を行う。
-     *
-     * @return bool
      */
     public function authorize(): bool
     {

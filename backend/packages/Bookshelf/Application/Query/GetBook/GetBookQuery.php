@@ -10,7 +10,7 @@ namespace Packages\Bookshelf\Application\Query\GetBook;
 final readonly class GetBookQuery
 {
     /**
-     * @param int $bookId 取得する絵本のID
+     * @param  int  $bookId  取得する絵本のID
      */
     public function __construct(
         public int $bookId,

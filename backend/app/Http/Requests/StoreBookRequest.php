@@ -13,8 +13,6 @@ class StoreBookRequest extends FormRequest
 {
     /**
      * ユーザーがこのリクエストを実行する権限があるかを判定する。
-     *
-     * @return bool
      */
     public function authorize(): bool
     {

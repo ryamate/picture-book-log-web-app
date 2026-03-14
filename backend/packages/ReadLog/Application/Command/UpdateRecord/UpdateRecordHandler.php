@@ -28,9 +28,6 @@ final readonly class UpdateRecordHandler
 
     /**
      * 読み聞かせ記録を更新する。
-     *
-     * @param  UpdateRecordCommand  $command
-     * @return ReadRecord
      */
     public function handle(UpdateRecordCommand $command): ReadRecord
     {

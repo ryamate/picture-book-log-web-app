@@ -12,7 +12,6 @@ use App\Models\PictureBook;
 final class GetBookHandler
 {
     /**
-     * @param  GetBookQuery    $query
      * @return PictureBook|null 絵本が見つからない場合はnullを返す
      */
     public function handle(GetBookQuery $query): ?PictureBook

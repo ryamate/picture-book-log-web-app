@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Packages\Family\Domain\Entity;
 
-use Packages\Shared\ValueObject\FamilyId;
 use Packages\Family\Domain\ValueObject\FamilyName;
+use Packages\Shared\ValueObject\FamilyId;
 
 final class Family
 {

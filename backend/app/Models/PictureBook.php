@@ -46,8 +46,6 @@ class PictureBook extends Model
 
     /**
      * この絵本を所有する家族を取得する。
-     *
-     * @return BelongsTo
      */
     public function family(): BelongsTo
     {
@@ -56,8 +54,6 @@ class PictureBook extends Model
 
     /**
      * この絵本を登録したユーザーを取得する。
-     *
-     * @return BelongsTo
      */
     public function registeredByUser(): BelongsTo
     {
@@ -66,8 +62,6 @@ class PictureBook extends Model
 
     /**
      * この絵本の読み聞かせ記録を取得する。
-     *
-     * @return HasMany
      */
     public function readRecords(): HasMany
     {

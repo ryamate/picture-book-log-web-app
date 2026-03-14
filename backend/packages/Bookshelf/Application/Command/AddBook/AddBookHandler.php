@@ -25,8 +25,6 @@ final readonly class AddBookHandler
     /**
      * 新しい絵本を登録する。Google Books IDによる重複を拒否する。
      *
-     * @param  AddBookCommand   $command
-     * @return PictureBook
      *
      * @throws DomainException 同じGoogle Books IDの絵本が家族の本棚に既に存在する場合
      */

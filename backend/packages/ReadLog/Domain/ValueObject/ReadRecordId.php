@@ -14,7 +14,8 @@ use InvalidArgumentException;
 final readonly class ReadRecordId
 {
     /**
-     * @param int $value 正の整数ID
+     * @param  int  $value  正の整数ID
+     *
      * @throws InvalidArgumentException 0以下の値の場合
      */
     public function __construct(private int $value)
@@ -24,7 +25,6 @@ final readonly class ReadRecordId
         }
     }
 
-    /** @return int */
     public function value(): int
     {
         return $this->value;
@@ -33,8 +33,7 @@ final readonly class ReadRecordId
     /**
      * 同一性を比較する。
      *
-     * @param self $other 比較対象
-     * @return bool
+     * @param  self  $other  比較対象
      */
     public function equals(self $other): bool
     {

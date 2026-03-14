@@ -10,7 +10,7 @@ namespace Packages\Bookshelf\Application\Command\RemoveBook;
 final readonly class RemoveBookCommand
 {
     /**
-     * @param int $bookId 削除する絵本のID
+     * @param  int  $bookId  削除する絵本のID
      */
     public function __construct(
         public int $bookId,

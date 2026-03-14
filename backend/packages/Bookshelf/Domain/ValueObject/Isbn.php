@@ -14,17 +14,17 @@ use InvalidArgumentException;
 final class Isbn
 {
     /**
-     * @param string $value ISBN文字列（10桁または13桁の数字）
+     * @param  string  $value  ISBN文字列（10桁または13桁の数字）
+     *
      * @throws InvalidArgumentException 形式が不正な場合
      */
     public function __construct(private readonly string $value)
     {
-        if (!preg_match('/^\d{10}(\d{3})?$/', $value)) {
+        if (! preg_match('/^\d{10}(\d{3})?$/', $value)) {
             throw new InvalidArgumentException('ISBN must be a 10 or 13 digit string.');
         }
     }
 
-    /** @return string */
     public function value(): string
     {
         return $this->value;

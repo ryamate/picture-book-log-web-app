@@ -17,9 +17,8 @@ class ReadRecordPolicy
      *
      * ユーザーが記録と同じ家族に属している場合に認可される。
      *
-     * @param User $user ユーザーモデル
-     * @param ReadRecord $readRecord 読み聞かせ記録モデル
-     * @return bool
+     * @param  User  $user  ユーザーモデル
+     * @param  ReadRecord  $readRecord  読み聞かせ記録モデル
      */
     public function manage(User $user, ReadRecord $readRecord): bool
     {

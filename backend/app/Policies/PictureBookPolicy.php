@@ -17,9 +17,8 @@ class PictureBookPolicy
      *
      * ユーザーが絵本と同じ家族に属している場合に認可される。
      *
-     * @param User $user ユーザーモデル
-     * @param PictureBook $pictureBook 絵本モデル
-     * @return bool
+     * @param  User  $user  ユーザーモデル
+     * @param  PictureBook  $pictureBook  絵本モデル
      */
     public function manage(User $user, PictureBook $pictureBook): bool
     {

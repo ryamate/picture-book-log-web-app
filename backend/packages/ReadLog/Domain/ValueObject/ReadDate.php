@@ -16,7 +16,8 @@ final readonly class ReadDate
     private string $value;
 
     /**
-     * @param string $value Y-m-d形式の日付文字列
+     * @param  string  $value  Y-m-d形式の日付文字列
+     *
      * @throws InvalidArgumentException 無効な日付または未来日の場合
      */
     public function __construct(string $value)
@@ -36,7 +37,6 @@ final readonly class ReadDate
         $this->value = $dateOnly->format('Y-m-d');
     }
 
-    /** @return string */
     public function value(): string
     {
         return $this->value;

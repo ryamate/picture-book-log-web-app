@@ -14,7 +14,8 @@ use InvalidArgumentException;
 final readonly class Reaction
 {
     /**
-     * @param string $value リアクションテキスト
+     * @param  string  $value  リアクションテキスト
+     *
      * @throws InvalidArgumentException 255文字を超える場合
      */
     public function __construct(private string $value)
@@ -24,7 +25,6 @@ final readonly class Reaction
         }
     }
 
-    /** @return string */
     public function value(): string
     {
         return $this->value;

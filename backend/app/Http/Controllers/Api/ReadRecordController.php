@@ -18,9 +18,9 @@ use Packages\ReadLog\Application\Command\DeleteRecord\DeleteRecordCommand;
 use Packages\ReadLog\Application\Command\DeleteRecord\DeleteRecordHandler;
 use Packages\ReadLog\Application\Command\UpdateRecord\UpdateRecordCommand;
 use Packages\ReadLog\Application\Command\UpdateRecord\UpdateRecordHandler;
+use Packages\ReadLog\Application\Exception\InvalidOwnershipException;
 use Packages\ReadLog\Application\Query\GetRecord\GetRecordHandler;
 use Packages\ReadLog\Application\Query\GetRecord\GetRecordQuery;
-use Packages\ReadLog\Application\Exception\InvalidOwnershipException;
 use Packages\ReadLog\Application\Query\ListRecords\ListRecordsHandler;
 use Packages\ReadLog\Application\Query\ListRecords\ListRecordsQuery;
 
@@ -32,10 +32,9 @@ class ReadRecordController extends Controller
     /**
      * 読み聞かせ記録一覧を取得する。 GET /api/v1/families/{family}/records
      *
-     * @param Request $request リクエスト
-     * @param Family $family 家族モデル
-     * @param ListRecordsHandler $handler 一覧取得ハンドラー
-     * @return ReadRecordCollection
+     * @param  Request  $request  リクエスト
+     * @param  Family  $family  家族モデル
+     * @param  ListRecordsHandler  $handler  一覧取得ハンドラー
      */
     public function index(Request $request, Family $family, ListRecordsHandler $handler): ReadRecordCollection
     {
@@ -57,10 +56,9 @@ class ReadRecordController extends Controller
     /**
      * 読み聞かせ記録を作成する。 POST /api/v1/families/{family}/records
      *
-     * @param StoreReadRecordRequest $request 読み聞かせ記録作成リクエスト
-     * @param Family $family 家族モデル
-     * @param CreateRecordHandler $handler 記録作成ハンドラー
-     * @return JsonResponse
+     * @param  StoreReadRecordRequest  $request  読み聞かせ記録作成リクエスト
+     * @param  Family  $family  家族モデル
+     * @param  CreateRecordHandler  $handler  記録作成ハンドラー
      */
     public function store(StoreReadRecordRequest $request, Family $family, CreateRecordHandler $handler): JsonResponse
     {
@@ -95,10 +93,9 @@ class ReadRecordController extends Controller
     /**
      * 読み聞かせ記録の詳細を取得する。 GET /api/v1/families/{family}/records/{readRecord}
      *
-     * @param Family $family 家族モデル
-     * @param ReadRecord $readRecord 読み聞かせ記録モデル
-     * @param GetRecordHandler $handler 記録取得ハンドラー
-     * @return ReadRecordResource
+     * @param  Family  $family  家族モデル
+     * @param  ReadRecord  $readRecord  読み聞かせ記録モデル
+     * @param  GetRecordHandler  $handler  記録取得ハンドラー
      */
     public function show(Family $family, ReadRecord $readRecord, GetRecordHandler $handler): ReadRecordResource
     {
@@ -112,11 +109,10 @@ class ReadRecordController extends Controller
     /**
      * 読み聞かせ記録を更新する。 PUT /api/v1/families/{family}/records/{readRecord}
      *
-     * @param UpdateReadRecordRequest $request 読み聞かせ記録更新リクエスト
-     * @param Family $family 家族モデル
-     * @param ReadRecord $readRecord 読み聞かせ記録モデル
-     * @param UpdateRecordHandler $handler 記録更新ハンドラー
-     * @return ReadRecordResource
+     * @param  UpdateReadRecordRequest  $request  読み聞かせ記録更新リクエスト
+     * @param  Family  $family  家族モデル
+     * @param  ReadRecord  $readRecord  読み聞かせ記録モデル
+     * @param  UpdateRecordHandler  $handler  記録更新ハンドラー
      */
     public function update(UpdateReadRecordRequest $request, Family $family, ReadRecord $readRecord, UpdateRecordHandler $handler): ReadRecordResource
     {
@@ -149,10 +145,9 @@ class ReadRecordController extends Controller
     /**
      * 読み聞かせ記録を削除する。 DELETE /api/v1/families/{family}/records/{readRecord}
      *
-     * @param Family $family 家族モデル
-     * @param ReadRecord $readRecord 読み聞かせ記録モデル
-     * @param DeleteRecordHandler $handler 記録削除ハンドラー
-     * @return JsonResponse
+     * @param  Family  $family  家族モデル
+     * @param  ReadRecord  $readRecord  読み聞かせ記録モデル
+     * @param  DeleteRecordHandler  $handler  記録削除ハンドラー
      */
     public function destroy(Family $family, ReadRecord $readRecord, DeleteRecordHandler $handler): JsonResponse
     {
