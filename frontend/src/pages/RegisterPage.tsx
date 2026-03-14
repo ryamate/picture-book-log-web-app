@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useState } from 'react';
 import type { RegisterData } from '../api/auth';
@@ -12,18 +12,27 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 export default function RegisterPage() {
   const { register: registerUser } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [apiError, setApiError] = useState<string>('');
+  const fromPath = location.state?.from?.pathname as string | undefined;
+  const isFromInvitation = fromPath?.startsWith('/invitations/');
+  const invitationEmail = location.state?.invitationEmail as string | undefined;
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<RegisterData>();
+  } = useForm<RegisterData>({
+    defaultValues: {
+      email: invitationEmail ?? '',
+    },
+  });
 
   const onSubmit = async (data: RegisterData) => {
     try {
       setApiError('');
       await registerUser(data);
-      navigate('/');
+      const from = location.state?.from?.pathname || '/';
+      navigate(from, { replace: true });
     } catch (err) {
       if (err instanceof AxiosError && err.response?.status === 422) {
         const messages = err.response.data.errors;
@@ -46,6 +55,11 @@ export default function RegisterPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {isFromInvitation && (
+              <p className="rounded-md bg-blue-50 p-3 text-sm text-blue-700">
+                招待を受け入れるにはアカウント登録が必要です。登録後、自動的に招待が受理されます。
+              </p>
+            )}
             {apiError && (
               <p className="whitespace-pre-line text-sm text-destructive">{apiError}</p>
             )}
@@ -67,6 +81,8 @@ export default function RegisterPage() {
               <Input
                 id="email"
                 type="email"
+                readOnly={!!invitationEmail}
+                className={invitationEmail ? 'bg-muted' : ''}
                 {...register('email', { required: 'メールアドレスを入力してください' })}
               />
               {errors.email && (
@@ -112,7 +128,7 @@ export default function RegisterPage() {
 
           <p className="mt-4 text-center text-sm text-muted-foreground">
             すでにアカウントをお持ちの方は{' '}
-            <Link to="/login" className="text-primary underline">
+            <Link to="/login" state={location.state} className="text-primary underline">
               ログイン
             </Link>
           </p>

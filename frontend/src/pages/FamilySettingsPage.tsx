@@ -5,6 +5,8 @@ import { useFamily, useUpdateFamily, useMembers } from '../hooks/useFamily';
 import { useChildren, useAddChild, useUpdateChild, useRemoveChild } from '../hooks/useChildren';
 import ChildCard from '../components/ChildCard';
 import ChildForm from '../components/ChildForm';
+import InviteMemberForm from '../components/InviteMemberForm';
+import InvitationList from '../components/InvitationList';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -82,6 +84,15 @@ export default function FamilySettingsPage() {
               子どもを追加
             </Button>
           )}
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>招待</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <InviteMemberForm familyId={familyId} />
+          <InvitationList familyId={familyId} />
         </CardContent>
       </Card>
     </div>

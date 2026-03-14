@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ChildController;
 use App\Http\Controllers\Api\FamilyController;
+use App\Http\Controllers\Api\InvitationController;
 use App\Http\Controllers\Api\PictureBookController;
 use App\Http\Controllers\Api\ReadRecordController;
 use App\Http\Controllers\Api\TagController;
@@ -18,6 +19,11 @@ Route::prefix('v1/auth')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/user', [AuthController::class, 'user']);
     });
+});
+
+Route::prefix('v1')->group(function () {
+    // 招待情報取得（認証不要）
+    Route::get('/invitations/{token}', [InvitationController::class, 'show']);
 });
 
 Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
@@ -53,6 +59,16 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
         Route::put('/{readRecord}', [ReadRecordController::class, 'update']);
         Route::delete('/{readRecord}', [ReadRecordController::class, 'destroy']);
     });
+
+    // Invitations (招待)
+    Route::prefix('/families/{family}/invitations')->group(function () {
+        Route::post('/', [InvitationController::class, 'store']);
+        Route::get('/', [InvitationController::class, 'index']);
+        Route::delete('/{invitation}', [InvitationController::class, 'destroy']);
+    });
+
+    // Accept invitation (トークンで特定)
+    Route::post('/invitations/{token}/accept', [InvitationController::class, 'accept']);
 
     // Tags (タグ検索)
     Route::get('/tags', [TagController::class, 'index']);

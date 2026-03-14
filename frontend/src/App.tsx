@@ -15,6 +15,7 @@ import RecordListPage from './pages/RecordListPage';
 import RecordCreatePage from './pages/RecordCreatePage';
 import RecordDetailPage from './pages/RecordDetailPage';
 import RecordEditPage from './pages/RecordEditPage';
+import AcceptInvitationPage from './pages/AcceptInvitationPage';
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/invitations/:token/accept" element={<AcceptInvitationPage />} />
 
           <Route
             element={

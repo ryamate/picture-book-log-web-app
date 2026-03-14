@@ -31,4 +31,9 @@ class Family extends Model
     {
         return $this->hasMany(ReadRecord::class);
     }
+
+    public function invitations(): HasMany
+    {
+        return $this->hasMany(FamilyInvitation::class);
+    }
 }

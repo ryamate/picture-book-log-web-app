@@ -44,13 +44,16 @@ Schema::create('family_invitations', function (Blueprint $table) {
 | 方式 | 説明 |
 |---|---|
 | UUID v4 | 36文字（ハイフン含む）。衝突リスクが極めて低い |
-| `Str::random(64)` | 64文字のランダム英数字。URL に使いやすい |
+| `Str::random(64)` | 64文字のランダム英数字。URL に使いやすいが Laravel 依存 |
+| `bin2hex(random_bytes(32))` | 64文字の16進数文字列。PHP 組み込みのみ |
 | 署名付き URL（Laravel Signed URL） | Laravel 組み込み機能。改ざん防止付き |
 
-→ **`Str::random(64)` を採用**。理由:
+→ **`bin2hex(random_bytes(32))` を採用**。理由:
+- Domain 層がフレームワーク（Laravel）に依存しない（既存 ValueObject と同じ方針）
 - 招待トークンは一時的なもので、署名付き URL ほどの厳密さは不要
 - DB に保存して照合するシンプルなフロー
-- URL に含めやすい文字列（英数字のみ）
+- URL に含めやすい文字列（16進数のみ）
+- `random_bytes` は暗号学的に安全な乱数を生成
 
 ### 設計判断: 有効期限のデフォルト値
 
@@ -157,7 +160,7 @@ final class Invitation
 ```php
 namespace Packages\Family\Domain\ValueObject;
 
-use Illuminate\Support\Str;
+use InvalidArgumentException;
 
 final class InvitationToken
 {
@@ -171,7 +174,7 @@ final class InvitationToken
 
     public static function generate(): self
     {
-        return new self(Str::random(64));
+        return new self(bin2hex(random_bytes(32)));
     }
 
     public static function fromString(string $value): self
@@ -185,6 +188,8 @@ final class InvitationToken
     }
 }
 ```
+
+> **変更理由**: `Illuminate\Support\Str` への依存を排除し、PHP 組み込みの `random_bytes` を使用。既存の Domain ValueObject（`Email`, `Birthday` 等）がフレームワーク非依存で実装されていることに合わせた。
 
 ### Domain Exceptions
 
@@ -299,11 +304,12 @@ final class SendInvitationCommand
 ```
 
 **`SendInvitationHandler`**:
-1. 招待先メールアドレスのユーザーが既に同家族に所属していないか確認
-2. `InvitationDomainService::createInvitation()` で招待エンティティ生成（重複チェック含む）
-3. `InvitationRepository::save()` で永続化
-4. `InvitationMail` を送信
-5. 作成された Invitation を返却
+1. `InvitationDomainService::createInvitation()` で招待エンティティ生成（重複チェック含む）
+2. `InvitationRepository::save()` で永続化
+3. `InvitationMail` を送信
+4. 作成された Invitation を返却
+
+> **変更理由**: 「招待先メールアドレスのユーザーが既に同家族に所属していないか確認」は `SendInvitationRequest`（FormRequest）の `withValidator` で実施済み。既存パターンに合わせ、バリデーションは Interface 層（FormRequest）に集約し、Handler はドメインロジックに専念する。
 
 ### AcceptInvitation
 
@@ -506,12 +512,24 @@ class InvitationMail extends Mailable
 </x-mail::message>
 ```
 
+### 環境変数の追加（前提作業）
+
+`FRONTEND_URL` 環境変数が現在未定義のため、以下を追加する:
+
+**`backend/.env`** および **`backend/.env.example`**:
+```env
+FRONTEND_URL=http://localhost:5173
+```
+
+> **変更理由**: 現状の `.env` に `FRONTEND_URL` が存在しない。招待メール内のリンク URL 生成に必要。
+
 ### 招待受理 URL の構成
 
 ```
 {FRONTEND_URL}/invitations/{token}/accept
 ```
 
+- `config('app.frontend_url')` または `env('FRONTEND_URL')` で取得
 - フロントエンドの URL。メールリンクは React SPA のルートを指す
 - React 側でトークンを取得し、API に受理リクエストを送る
 
@@ -731,8 +749,11 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
 
 招待関連の認可は既存の `FamilyPolicy` を再利用:
 
-- `store`, `index`, `destroy`: `FamilyPolicy::view` で家族所属チェック
+- `index`: `FamilyPolicy::view` で家族所属チェック（読み取り操作）
+- `store`, `destroy`: `FamilyPolicy::update` で家族所属チェック（書き込み操作）
 - `accept`: 認証済みであれば誰でも可（トークンが正しければ受理可能）
+
+> **変更理由**: 招待送信・キャンセルは書き込み操作のため、意味的に `view` ではなく `update` が適切。現状の `FamilyPolicy` では `view` と `update` のロジックは同一（`$user->family_id === $family->id`）だが、将来的にロール分離する場合に備えてセマンティクスを正しくする。
 
 `destroy` の追加チェック:
 - 招待が指定された家族に属しているか（`scopeBindings` or 手動チェック）
@@ -1034,16 +1055,38 @@ const AcceptInvitationPage = () => {
          └─ ログイン後、元の URL に戻る（リターン URL）
 ```
 
-**リターン URL の実装**:
-ProtectedRoute でリダイレクト時に現在の URL を state に含める:
+**リターン URL の実装（既存ファイルの修正が必要）**:
 
+> **変更理由**: 現在の `ProtectedRoute.tsx` は `<Navigate to="/login" replace />` のみで `state` を渡しておらず、`LoginPage.tsx` は `navigate('/')` 固定。招待受理フローで未ログインユーザーがメールリンクからアクセスした場合に、ログイン後に招待受理ページへ戻れるようにするため、両ファイルの修正が必要。
+
+**`frontend/src/components/ProtectedRoute.tsx`（既存ファイル修正）**:
 ```typescript
-// ProtectedRoute
-if (!user) {
-  return <Navigate to="/login" state={{ from: location }} replace />;
-}
+import { Navigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import type { ReactNode } from 'react';
 
-// LoginPage - ログイン成功後
+export default function ProtectedRoute({ children }: { children: ReactNode }) {
+  const { user, isLoading } = useAuth();
+  const location = useLocation();
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return <>{children}</>;
+}
+```
+
+**`frontend/src/pages/LoginPage.tsx`（既存ファイル修正）**:
+```typescript
+// useLocation を追加
+const location = useLocation();
+
+// onSubmit 内のログイン成功後リダイレクトを変更
 const from = location.state?.from?.pathname || '/';
 navigate(from, { replace: true });
 ```
@@ -1103,6 +1146,8 @@ MAIL_FROM_NAME="${APP_NAME}"
 ## 作業順序まとめ
 
 ```
+6-0.  前提作業 (FRONTEND_URL 環境変数追加)
+         ↓
 6-1.  マイグレーション (family_invitations)
          ↓
 6-2.  Domain 層 (Entity, ValueObject, RepositoryInterface, DomainService, Exceptions)
@@ -1125,7 +1170,7 @@ MAIL_FROM_NAME="${APP_NAME}"
          ↓
 6-11. カスタムフック (useInvitations, useAcceptInvitation)
          ↓
-6-12. ページコンポーネント (FamilySettingsPage 統合, AcceptInvitationPage)
+6-12. ページコンポーネント (ProtectedRoute/LoginPage 修正, FamilySettingsPage 統合, AcceptInvitationPage)
          ↓
 6-13. Mailpit での E2E 確認
          ↓
@@ -1137,12 +1182,15 @@ MAIL_FROM_NAME="${APP_NAME}"
 ## 注意事項・判断メモ
 
 - **Value Object の共有**: `FamilyId`, `UserId`, `Email` は共有カーネル（`packages/Shared/ValueObject/`）から参照。rebuild-plan の「コンテキスト間の Value Object 共有方針」を参照
-- **トークン生成**: `Str::random(64)` でシンプルに。署名付き URL は不採用
+- **トークン生成**: `bin2hex(random_bytes(32))` で PHP 組み込みのみ使用。Domain 層のフレームワーク非依存を維持
 - **有効期限**: 7日間。`Invitation::isExpired()` で Entity 内でチェック
 - **招待受理にはログインが必須**: 未登録ユーザーは先にアカウント登録が必要。メール内に案内を記載
-- **リターン URL**: ProtectedRoute の `state.from` でログイン後に招待受理ページへ戻す
+- **リターン URL**: ProtectedRoute の `state.from` でログイン後に招待受理ページへ戻す（**既存の ProtectedRoute.tsx と LoginPage.tsx の修正が必要**）
+- **FRONTEND_URL 環境変数**: 現状未定義のため `.env` / `.env.example` に追加が必要
+- **バリデーション責務の分離**: 「自分自身への招待」「既にメンバーのユーザーへの招待」チェックは FormRequest（Interface 層）に集約。Handler はドメインロジック（重複招待チェック等）に専念
+- **認可メソッドの使い分け**: 読み取り操作（`index`）は `FamilyPolicy::view`、書き込み操作（`store`, `destroy`）は `FamilyPolicy::update` を使用
 - **既に家族に所属しているユーザーの受理**: 409 を返す。Phase 1 では家族脱退機能がないため、別家族への移動は不可
 - **DomainService の導入**: 招待作成は重複チェック + トークン生成 + 有効期限設定の複合ロジックのため、Entity 単体ではなく DomainService で管理
-- **例外マッピング**: Domain 例外を Handler/bootstrap で HTTP ステータスに一括変換。Controller の try-catch ではなく宣言的に管理
+- **例外マッピング**: Domain 例外を bootstrap/app.php の `withExceptions` で HTTP ステータスに一括変換。Controller の try-catch ではなく宣言的に管理
 - **メールの非同期送信**: Phase 1 では `QUEUE_CONNECTION=sync` のため同期送信。将来的にキュー化する場合は `ShouldQueue` インターフェースを追加するだけで対応可能
 - **期限切れ招待の削除**: 自動削除（スケジュールタスク）は Phase 1 では実装しない。一覧で `expired` ステータスとして表示するのみ
