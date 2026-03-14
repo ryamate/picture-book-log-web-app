@@ -4,6 +4,8 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ChildController;
 use App\Http\Controllers\Api\FamilyController;
 use App\Http\Controllers\Api\PictureBookController;
+use App\Http\Controllers\Api\ReadRecordController;
+use App\Http\Controllers\Api\TagController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', fn () => response()->json(['status' => 'ok']));
@@ -42,4 +44,16 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
         Route::put('/{pictureBook}', [PictureBookController::class, 'update']);
         Route::delete('/{pictureBook}', [PictureBookController::class, 'destroy']);
     });
+
+    // Read records (読み聞かせ記録)
+    Route::prefix('/families/{family}/records')->scopeBindings()->group(function () {
+        Route::get('/', [ReadRecordController::class, 'index']);
+        Route::post('/', [ReadRecordController::class, 'store']);
+        Route::get('/{readRecord}', [ReadRecordController::class, 'show']);
+        Route::put('/{readRecord}', [ReadRecordController::class, 'update']);
+        Route::delete('/{readRecord}', [ReadRecordController::class, 'destroy']);
+    });
+
+    // Tags (タグ検索)
+    Route::get('/tags', [TagController::class, 'index']);
 });

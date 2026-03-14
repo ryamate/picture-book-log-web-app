@@ -11,6 +11,10 @@ import FamilySettingsPage from './pages/FamilySettingsPage';
 import BookSearchPage from './pages/BookSearchPage';
 import BookshelfPage from './pages/BookshelfPage';
 import BookDetailPage from './pages/BookDetailPage';
+import RecordListPage from './pages/RecordListPage';
+import RecordCreatePage from './pages/RecordCreatePage';
+import RecordDetailPage from './pages/RecordDetailPage';
+import RecordEditPage from './pages/RecordEditPage';
 
 export default function App() {
   return (
@@ -41,6 +45,10 @@ export default function App() {
               <Route path="/books/search" element={<BookSearchPage />} />
               <Route path="/books" element={<BookshelfPage />} />
               <Route path="/books/:bookId" element={<BookDetailPage />} />
+              <Route path="/records" element={<RecordListPage />} />
+              <Route path="/records/new" element={<RecordCreatePage />} />
+              <Route path="/records/:recordId" element={<RecordDetailPage />} />
+              <Route path="/records/:recordId/edit" element={<RecordEditPage />} />
             </Route>
           </Route>
         </Routes>

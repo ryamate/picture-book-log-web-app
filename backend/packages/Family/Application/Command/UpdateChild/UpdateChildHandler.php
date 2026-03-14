@@ -7,7 +7,7 @@ namespace Packages\Family\Application\Command\UpdateChild;
 use Packages\Family\Domain\Entity\Child;
 use Packages\Family\Domain\Repository\ChildRepositoryInterface;
 use Packages\Family\Domain\ValueObject\Birthday;
-use Packages\Family\Domain\ValueObject\ChildId;
+use Packages\Shared\ValueObject\ChildId;
 use Packages\Family\Domain\ValueObject\ChildName;
 
 final class UpdateChildHandler

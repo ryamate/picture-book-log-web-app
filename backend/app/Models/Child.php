@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Child extends Model
 {
@@ -16,5 +17,16 @@ class Child extends Model
     public function family(): BelongsTo
     {
         return $this->belongsTo(Family::class);
+    }
+
+    /**
+     * この子どもの読み聞かせ記録を取得する。
+     *
+     * @return BelongsToMany
+     */
+    public function readRecords(): BelongsToMany
+    {
+        return $this->belongsToMany(ReadRecord::class, 'child_read_record')
+            ->withPivot('reaction');
     }
 }
