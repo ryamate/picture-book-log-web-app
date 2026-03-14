@@ -17,7 +17,7 @@ use Packages\Shared\ValueObject\UserId;
 final readonly class SendInvitationHandler
 {
     public function __construct(
-        private InvitationDomainService       $domainService,
+        private InvitationDomainService $domainService,
         private InvitationRepositoryInterface $invitationRepository,
     ) {}
 

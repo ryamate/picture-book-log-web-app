@@ -8,6 +8,6 @@ final readonly class AcceptInvitationCommand
 {
     public function __construct(
         public string $token,
-        public int    $userId,
+        public int $userId,
     ) {}
 }
