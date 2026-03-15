@@ -6,7 +6,9 @@
 
 このリファクタリングで、GET用にも専用FormRequestクラスを作成し、バリデーションとアクセサメソッドをRequestに集約する。
 
-## 対象エンドポイント (4箇所)
+## 対象エンドポイント
+
+### A. FormRequest新規作成が必要 (4箇所)
 
 | コントローラー | メソッド | クエリパラメータ |
 |---|---|---|
@@ -14,6 +16,19 @@
 | PictureBookController | index() | status, sort, order, per_page |
 | PictureBookController | search() | q |
 | TagController | index() | q |
+
+### B. `Request $request` を使っているがFormRequest不要 (2箇所)
+
+| コントローラー | メソッド | 用途 | 対応 |
+|---|---|---|---|
+| AuthController | logout() | `$request->user()` のみ | 対応不要（バリデーション対象なし） |
+| AuthController | user() | `$request->user()->id` のみ | 対応不要（バリデーション対象なし） |
+
+### C. 一貫性の問題 (1箇所)
+
+| コントローラー | メソッド | 問題 | 対応 |
+|---|---|---|---|
+| InvitationController | accept() | `request()->user()->id` とヘルパー関数を使用。他は全て `$request->user()->id` | `Request $request` を引数に追加し `$request->user()->id` に統一 |
 
 ## 実装ステップ
 
@@ -54,7 +69,14 @@
 - インライン `$request->validate(...)` 削除、`$request->keyword()` に置換
 - 不要になった `use Illuminate\Http\Request` を削除
 
-### Step 3: 動作確認
+### Step 3: InvitationController の一貫性修正 (1ファイル)
+
+**3-1. `backend/app/Http/Controllers/Api/InvitationController.php`**
+- `accept()` メソッドに `Request $request` 引数を追加
+- `request()->user()->id` を `$request->user()->id` に変更
+- `use Illuminate\Http\Request;` の import を追加
+
+### Step 4: 動作確認
 
 - `cd backend && php artisan test` で全テスト通過を確認
 - 既存テスト（ListBooksTest, ListRecordsTest, SearchGoogleBooksTest）はGETリクエストでクエリパラメータを送っているため、FormRequest化しても変更不要

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\IndexBookRequest;
+use App\Http\Requests\SearchGoogleBookRequest;
 use App\Http\Requests\StoreBookRequest;
 use App\Http\Requests\UpdateBookRequest;
 use App\Http\Resources\GoogleBookResource;
@@ -11,9 +13,9 @@ use App\Http\Resources\PictureBookResource;
 use App\Models\Family;
 use App\Models\PictureBook;
 use DomainException;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Packages\Bookshelf\Application\Command\AddBook\AddBookCommand;
 use Packages\Bookshelf\Application\Command\AddBook\AddBookHandler;
 use Packages\Bookshelf\Application\Command\RemoveBook\RemoveBookCommand;
@@ -33,17 +35,16 @@ class PictureBookController extends Controller
     /**
      * キーワードでGoogle Booksを検索する。 GET /api/google-books/search
      *
-     * @param  Request  $request  リクエスト
+     * @param  SearchGoogleBookRequest  $request  Google Books 検索リクエスト
      * @param  SearchGoogleBooksHandler  $handler  検索ハンドラー
-     * @return JsonResponse
+     *
+     * @throws ConnectionException
      */
-    public function search(Request $request, SearchGoogleBooksHandler $handler)
+    public function search(SearchGoogleBookRequest $request, SearchGoogleBooksHandler $handler): JsonResponse
     {
-        $request->validate(['q' => ['required', 'string', 'min:1']]);
-
         try {
             $result = $handler->handle(new SearchGoogleBooksQuery(
-                keyword: $request->query('q'),
+                keyword: $request->keyword(),
             ));
         } catch (RequestException $e) {
             $status = $e->response->status();
@@ -63,21 +64,21 @@ class PictureBookController extends Controller
     /**
      * 家族の絵本一覧を取得する。 GET /api/families/{family}/picture-books
      *
-     * @param  Request  $request  リクエスト
+     * @param  IndexBookRequest  $request  絵本一覧取得リクエスト
      * @param  Family  $family  家族モデル
      * @param  ListBooksHandler  $handler  一覧取得ハンドラー
      * @return PictureBookCollection
      */
-    public function index(Request $request, Family $family, ListBooksHandler $handler)
+    public function index(IndexBookRequest $request, Family $family, ListBooksHandler $handler)
     {
         $this->authorize('view', $family);
 
         $result = $handler->handle(new ListBooksQuery(
             familyId: $family->id,
-            status: $request->query('status'),
-            sort: $request->query('sort', 'created_at'),
-            order: $request->query('order', 'desc'),
-            perPage: min((int) $request->query('per_page', 20), 100),
+            status: $request->status(),
+            sort: $request->sort(),
+            order: $request->order(),
+            perPage: $request->perPage(),
         ));
 
         return new PictureBookCollection($result);

@@ -9,6 +9,7 @@ use App\Http\Resources\InvitationResource;
 use App\Models\Family;
 use App\Models\FamilyInvitation;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\DB;
 use Packages\Family\Application\Command\AcceptInvitation\AcceptInvitationCommand;
@@ -43,7 +44,7 @@ class InvitationController extends Controller
     {
         $this->authorize('update', $family);
 
-        $invitation = DB::transaction(fn () => $handler->handle(new SendInvitationCommand(
+        $invitation = DB::transaction(static fn () => $handler->handle(new SendInvitationCommand(
             familyId: $family->id,
             invitedByUserId: $request->user()->id,
             email: $request->validated('email'),
@@ -134,11 +135,11 @@ class InvitationController extends Controller
      *
      * @throws Throwable
      */
-    public function accept(string $token, AcceptInvitationHandler $handler): JsonResponse
+    public function accept(Request $request, string $token, AcceptInvitationHandler $handler): JsonResponse
     {
         $invitation = DB::transaction(fn () => $handler->handle(new AcceptInvitationCommand(
             token: $token,
-            userId: request()->user()->id,
+            userId: $request->user()->id,
         )));
 
         $family = Family::find($invitation->familyId()->value());
