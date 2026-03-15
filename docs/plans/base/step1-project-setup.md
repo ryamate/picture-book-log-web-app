@@ -233,7 +233,7 @@ default-character-set=utf8mb4
 services:
   app:
     build:
-      context: .
+      context: ..
       dockerfile: infra/docker/php/Dockerfile
     volumes:
       - ./backend:/var/www/html
@@ -269,7 +269,7 @@ services:
       - db-data:/var/lib/mysql
       - ./infra/docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 5s
       timeout: 5s
       retries: 10
