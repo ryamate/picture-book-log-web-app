@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\IndexReadRecordRequest;
 use App\Http\Requests\StoreReadRecordRequest;
 use App\Http\Requests\UpdateReadRecordRequest;
 use App\Http\Resources\ReadRecordCollection;
@@ -10,7 +11,6 @@ use App\Http\Resources\ReadRecordResource;
 use App\Models\Family;
 use App\Models\ReadRecord;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Packages\ReadLog\Application\Command\CreateRecord\CreateRecordCommand;
 use Packages\ReadLog\Application\Command\CreateRecord\CreateRecordHandler;
@@ -32,22 +32,22 @@ class ReadRecordController extends Controller
     /**
      * 読み聞かせ記録一覧を取得する。 GET /api/v1/families/{family}/records
      *
-     * @param  Request  $request  リクエスト
+     * @param  IndexReadRecordRequest  $request  読み聞かせ記録一覧取得リクエスト
      * @param  Family  $family  家族モデル
      * @param  ListRecordsHandler  $handler  一覧取得ハンドラー
      */
-    public function index(Request $request, Family $family, ListRecordsHandler $handler): ReadRecordCollection
+    public function index(IndexReadRecordRequest $request, Family $family, ListRecordsHandler $handler): ReadRecordCollection
     {
         $this->authorize('view', $family);
 
         $result = $handler->handle(new ListRecordsQuery(
             familyId: $family->id,
-            childId: $request->query('child_id') ? (int) $request->query('child_id') : null,
-            pictureBookId: $request->query('picture_book_id') ? (int) $request->query('picture_book_id') : null,
-            dateFrom: $request->query('date_from'),
-            dateTo: $request->query('date_to'),
-            perPage: min((int) $request->query('per_page', 20), 100),
-            page: (int) $request->query('page', 1),
+            childId: $request->childId(),
+            pictureBookId: $request->pictureBookId(),
+            dateFrom: $request->dateFrom(),
+            dateTo: $request->dateTo(),
+            perPage: $request->perPage(),
+            page: $request->page(),
         ));
 
         return new ReadRecordCollection($result);
