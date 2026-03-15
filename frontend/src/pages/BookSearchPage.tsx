@@ -4,6 +4,8 @@ import { useSearchGoogleBooks, useAddBook } from '../hooks/useBooks';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import EmptyState from '@/components/EmptyState';
 import type { GoogleBook } from '../api/books';
 import { useNavigate } from 'react-router-dom';
 
@@ -65,10 +67,26 @@ export default function BookSearchPage() {
         </Button>
       </form>
 
-      {isLoading && <p className="text-muted-foreground">検索中...</p>}
+      {isLoading && (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Card key={i}>
+              <CardContent className="flex gap-4 p-4">
+                <Skeleton className="h-32 w-24 shrink-0 rounded" />
+                <div className="min-w-0 flex-1 space-y-2">
+                  <Skeleton className="h-4 w-4/5" />
+                  <Skeleton className="h-3.5 w-3/5" />
+                  <Skeleton className="h-3 w-1/4" />
+                  <Skeleton className="h-7 w-24" />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
       {data && data.items.length === 0 && searchQuery.length >= 2 && (
-        <p className="text-muted-foreground">検索結果が見つかりませんでした</p>
+        <EmptyState message="検索結果が見つかりませんでした" />
       )}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

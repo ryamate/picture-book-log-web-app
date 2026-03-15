@@ -10,6 +10,7 @@ import InvitationList from '../components/InvitationList';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function FamilySettingsPage() {
   const { user } = useAuth();
@@ -23,7 +24,24 @@ export default function FamilySettingsPage() {
   const removeChild = useRemoveChild(familyId);
   const [showAddChild, setShowAddChild] = useState(false);
 
-  if (!family) return <div className="text-muted-foreground">読み込み中...</div>;
+  if (!family) {
+    return (
+      <div className="max-w-2xl space-y-6">
+        <Skeleton className="h-8 w-32" />
+        {Array.from({ length: 3 }).map((_, i) => (
+          <Card key={i}>
+            <CardHeader>
+              <Skeleton className="h-5 w-24" />
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-3/4" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-2xl space-y-6">

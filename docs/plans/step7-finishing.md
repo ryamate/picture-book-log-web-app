@@ -62,38 +62,49 @@ class ErrorBoundary extends Component<Props, State> {
 ```typescript
 // src/components/ErrorFallback.tsx
 const ErrorFallback = ({ onRetry }: { onRetry: () => void }) => (
-  <div className="error-fallback">
-    <h2>予期しないエラーが発生しました</h2>
-    <p>申し訳ありません。ページの再読み込みをお試しください。</p>
-    <button onClick={onRetry}>再試行</button>
-    <button onClick={() => window.location.href = '/'}>トップに戻る</button>
+  <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4 p-8 text-center">
+    <h2 className="text-xl font-semibold text-foreground">予期しないエラーが発生しました</h2>
+    <p className="text-muted-foreground">申し訳ありません。ページの再読み込みをお試しください。</p>
+    <div className="flex gap-3">
+      <button onClick={onRetry} className="...">再試行</button>
+      <button onClick={() => window.location.href = '/'} className="...">トップに戻る</button>
+    </div>
   </div>
 );
 ```
 
+※ ボタンには既存の shadcn/ui Button コンポーネントを使用する。
+
 ### 適用箇所
 
 ```typescript
-// src/App.tsx
-<ErrorBoundary>
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
-  </QueryClientProvider>
-</ErrorBoundary>
+// src/main.tsx — QueryClientProvider の外側で ErrorBoundary をラップ
+<StrictMode>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>
+  </ErrorBoundary>
+</StrictMode>
 ```
+
+※ 現状は `BrowserRouter` + `AuthProvider` を `App.tsx` 内で使用しているため、
+`main.tsx` で ErrorBoundary を最外層に配置する。
 
 ### API エラーのグローバルハンドリング
 
-TanStack Query の `QueryClient` でグローバルエラーコールバックを設定:
+既存の `QueryClient`（`src/main.tsx`）にグローバルエラーコールバックを追加:
 
 ```typescript
+// src/main.tsx（既存の queryClient 定義を拡張）
 const queryClient = new QueryClient({
   defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 5 * 60 * 1000,
+    },
     mutations: {
       onError: (error) => {
-        // 汎用エラー通知（トースト等）
         if (isAxiosError(error) && error.response?.status === 500) {
           toast.error('サーバーエラーが発生しました。しばらくしてから再度お試しください。');
         }
@@ -143,53 +154,40 @@ docker compose exec frontend npm install react-hot-toast
 
 ### 実装方法
 
-CSS アニメーションによるシンプルなスケルトン:
+Tailwind CSS の `animate-pulse` を使ったスケルトン（`tw-animate-css` が既にインストール済み）。
+shadcn/ui の Skeleton コンポーネントパターンに合わせる:
 
 ```typescript
-// src/components/Skeleton.tsx
-interface SkeletonProps {
-  width?: string;
-  height?: string;
-  borderRadius?: string;
-}
+// src/components/ui/skeleton.tsx
+import { cn } from '@/lib/utils';
 
-const Skeleton = ({ width = '100%', height = '1rem', borderRadius = '4px' }: SkeletonProps) => (
-  <div
-    className="skeleton"
-    style={{ width, height, borderRadius }}
-  />
-);
-```
-
-```css
-/* src/styles/skeleton.css */
-.skeleton {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+function Skeleton({ className, ...props }: React.ComponentProps<'div'>) {
+  return (
+    <div
+      className={cn('animate-pulse rounded-md bg-muted', className)}
+      {...props}
+    />
+  );
 }
 ```
+
+※ 別途 CSS ファイルは不要。Tailwind の `animate-pulse` でシマーアニメーションを実現する。
 
 ### 各ページ用スケルトンコンポーネント
 
 ```typescript
 // src/components/BookCardSkeleton.tsx
 const BookCardSkeleton = () => (
-  <div className="book-card-skeleton">
-    <Skeleton width="100%" height="200px" />        {/* サムネイル */}
-    <Skeleton width="80%" height="1rem" />           {/* タイトル */}
-    <Skeleton width="60%" height="0.875rem" />       {/* 著者 */}
+  <div className="space-y-3">
+    <Skeleton className="h-[200px] w-full" />          {/* サムネイル */}
+    <Skeleton className="h-4 w-4/5" />                 {/* タイトル */}
+    <Skeleton className="h-3.5 w-3/5" />               {/* 著者 */}
   </div>
 );
 
 // src/components/BookshelfSkeleton.tsx
 const BookshelfSkeleton = () => (
-  <div className="bookshelf-grid">
+  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
     {Array.from({ length: 8 }).map((_, i) => (
       <BookCardSkeleton key={i} />
     ))}
@@ -245,6 +243,8 @@ if (isLoading) return <BookshelfSkeleton />;
 
 ```typescript
 // src/components/EmptyState.tsx
+import { Button } from '@/components/ui/button';
+
 interface EmptyStateProps {
   message: string;
   actionLabel?: string;
@@ -252,10 +252,10 @@ interface EmptyStateProps {
 }
 
 const EmptyState = ({ message, actionLabel, onAction }: EmptyStateProps) => (
-  <div className="empty-state">
-    <p>{message}</p>
+  <div className="flex flex-col items-center justify-center py-12 text-center">
+    <p className="text-muted-foreground mb-4">{message}</p>
     {actionLabel && onAction && (
-      <button onClick={onAction}>{actionLabel}</button>
+      <Button onClick={onAction}>{actionLabel}</Button>
     )}
   </div>
 );
@@ -263,81 +263,69 @@ const EmptyState = ({ message, actionLabel, onAction }: EmptyStateProps) => (
 
 ---
 
-## 7-4. レスポンシブデザイン（モバイルファースト）
+## 7-4. レスポンシブデザイン確認・補完
 
-### 方針
+### 現状（実装済み）
 
-モバイルファーストで設計し、ブレークポイントで PC 向けレイアウトに拡張する。
+Step 2〜6 の実装で Tailwind CSS v4 のレスポンシブプレフィックスによる対応が大部分完了している:
 
-### ブレークポイント
+| ページ | 現状の実装 |
+|---|---|
+| BookshelfPage | `grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4` |
+| BookSearchPage | `grid gap-4 sm:grid-cols-2 lg:grid-cols-3` |
+| RecordListPage | `grid gap-3 sm:grid-cols-2 lg:grid-cols-4` |
+| フォーム | 1列レイアウト（モバイル・デスクトップ共通） |
+
+### ブレークポイント（Tailwind v4 デフォルト）
 
 | 名前 | 幅 | 対象 |
 |---|---|---|
 | `sm` | 640px〜 | 大きめのスマートフォン |
 | `md` | 768px〜 | タブレット |
 | `lg` | 1024px〜 | デスクトップ |
+| `xl` | 1280px〜 | ワイドデスクトップ |
 
 ### CSS 方針
 
-| 方式 | 説明 |
-|---|---|
-| CSS Modules | コンポーネントスコープ。名前衝突なし |
-| Tailwind CSS | ユーティリティファースト。高速開発 |
-| 素の CSS + BEM | シンプル。ライブラリ不要 |
+→ **Tailwind CSS v4 + shadcn/ui を継続使用**。Step 2〜6 で既に採用済みのため統一する。
 
-→ **CSS Modules を採用**。理由:
-- Vite が標準サポート（設定不要）
-- コンポーネント単位でスタイルを管理でき、スコープが自然に分離
-- Tailwind ほどの学習コストがなく、通常の CSS 知識で書ける
-- Phase 1 のコンポーネント数なら十分に管理可能
+技術スタック:
+- `tailwindcss` v4 + `@tailwindcss/vite`（ビルド統合）
+- `shadcn/ui`（Button, Card, Input, Label 等の UI コンポーネント）
+- `class-variance-authority`（コンポーネントバリアント管理）
+- `tailwind-merge` + `clsx`（className ユーティリティ）
 
-### 主要レイアウトの対応方針
+### 残作業（Step 7 で対応）
 
 **Header / ナビゲーション**:
-- モバイル: ハンバーガーメニュー
+- モバイル: ハンバーガーメニュー（現状のナビゲーションがモバイルで適切か確認し、必要ならハンバーガー化）
 - デスクトップ: 横並びナビゲーション
 
-**BookshelfPage（本棚グリッド）**:
-- モバイル: 2列グリッド
-- タブレット: 3列
-- デスクトップ: 4〜5列
-
-```css
-.bookshelf-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-}
-
-@media (min-width: 768px) {
-  .bookshelf-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-  .bookshelf-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
+```typescript
+// Tailwind レスポンシブの例（ハンバーガーメニュー）
+<nav>
+  <button className="md:hidden" onClick={toggleMenu}>☰</button>
+  <div className="hidden md:flex gap-4">
+    {/* デスクトップナビ */}
+  </div>
+</nav>
 ```
-
-**RecordListPage（記録リスト）**:
-- モバイル: カード型の縦並び（フルwidth）
-- デスクトップ: カード型 + 左にフィルターサイドバー
-
-**フォーム（RecordForm, ChildForm 等）**:
-- モバイル: 1列レイアウト
-- デスクトップ: 2列（ラベル左、入力右）or そのまま1列（十分な幅）
 
 **BookDetailPage**:
 - モバイル: サムネイル上、情報下の縦並び
 - デスクトップ: サムネイル左、情報右の横並び
 
+```typescript
+<div className="flex flex-col md:flex-row gap-6">
+  <div className="w-full md:w-1/3">{/* サムネイル */}</div>
+  <div className="flex-1">{/* 情報 */}</div>
+</div>
+```
+
 ### タッチ操作の考慮
 
-- タップターゲットは最低 44x44px
-- フォーム入力フィールドに十分なパディング
+- タップターゲットは最低 44x44px（shadcn/ui の Button はデフォルトで対応済み）
+- フォーム入力フィールドに十分なパディング（shadcn/ui の Input で対応済み）
 - スワイプ操作は Phase 1 では不要
 
 ---
@@ -595,7 +583,7 @@ Chrome DevTools でモバイル表示 → 各ページのレイアウト確認
          ↓
 7-3.  空状態メッセージ（EmptyState コンポーネント + 各ページ適用）
          ↓
-7-4.  レスポンシブデザイン（CSS Modules + ブレークポイント対応）
+7-4.  レスポンシブデザイン確認・補完（ナビゲーション等の残作業）
          ↓
 7-5.  データベースシーダー作成
          ↓
@@ -612,9 +600,10 @@ Chrome DevTools でモバイル表示 → 各ページのレイアウト確認
 
 - **ErrorBoundary はクラスコンポーネント**: React の ErrorBoundary は現時点でクラスコンポーネントでのみ実装可能。関数コンポーネント版は react-error-boundary ライブラリで代替可能だが、Phase 1 では標準 API で十分
 - **トースト通知**: `react-hot-toast` を採用。軽量で API がシンプル
-- **CSS 方針**: CSS Modules。Tailwind CSS は Phase 2 以降で検討
-- **スケルトン**: 自前実装。ライブラリ（react-loading-skeleton 等）は不採用。CSS アニメーションだけで実現できるため
+- **CSS 方針**: Tailwind CSS v4 + shadcn/ui（Step 2〜6 で採用済み。Step 7 でも統一して使用）
+- **スケルトン**: shadcn/ui パターンの Skeleton コンポーネント + Tailwind `animate-pulse`。外部ライブラリ不要
 - **フロントエンドテスト**: Phase 1 ではユニットテスト・E2E テスト（Playwright 等）は導入しない。手動テストのみ
 - **デモデータ**: 実在する絵本のタイトル・著者を使用。サムネイル URL は Google Books からの実際の URL or null
 - **README の維持**: 各 Step 完了時に README を都度更新するのではなく、Step 7 で一括作成する方針。開発中は `docs/plans/` を参照
 - **パフォーマンス最適化**: Phase 1 ではデータ量が限定的なため、特別な最適化（仮想スクロール、画像遅延読み込み等）は行わない。必要になった時点で追加
+- **レスポンシブ対応**: 主要ページのグリッドレイアウトは Step 2〜6 で Tailwind レスポンシブプレフィックスにより実装済み。Step 7 ではナビゲーションのモバイル対応等の残作業を補完

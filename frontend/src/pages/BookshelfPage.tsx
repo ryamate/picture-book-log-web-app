@@ -4,6 +4,8 @@ import { useAuth } from '../hooks/useAuth';
 import { useBooks } from '../hooks/useBooks';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import EmptyState from '@/components/EmptyState';
 
 const STATUS_TABS = [
   { label: '全て', value: undefined },
@@ -49,12 +51,37 @@ export default function BookshelfPage() {
         ))}
       </div>
 
-      {isLoading && <p className="text-muted-foreground">読み込み中...</p>}
+      {isLoading && (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <Card key={i}>
+              <CardContent className="flex gap-3 p-4">
+                <Skeleton className="h-28 w-20 shrink-0 rounded" />
+                <div className="min-w-0 flex-1 space-y-2">
+                  <Skeleton className="h-4 w-4/5" />
+                  <Skeleton className="h-3.5 w-3/5" />
+                  <Skeleton className="h-5 w-16" />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
       {data && data.data.length === 0 && (
-        <p className="text-muted-foreground">
-          まだ絵本が登録されていません。検索して追加しましょう。
-        </p>
+        status ? (
+          <EmptyState
+            message="このステータスの絵本はありません"
+            actionLabel="すべて表示"
+            onAction={() => { setStatus(undefined); setPage(1); }}
+          />
+        ) : (
+          <EmptyState
+            message="まだ絵本が登録されていません"
+            actionLabel="絵本を探す"
+            onAction={() => navigate('/books/search')}
+          />
+        )
       )}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
