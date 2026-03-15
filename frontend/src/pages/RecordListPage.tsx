@@ -6,6 +6,8 @@ import { useChildren } from '../hooks/useChildren';
 import { useBooks } from '../hooks/useBooks';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import EmptyState from '@/components/EmptyState';
 
 export default function RecordListPage() {
   const { user } = useAuth();
@@ -104,10 +106,43 @@ export default function RecordListPage() {
         </div>
       </div>
 
-      {isLoading && <p className="text-muted-foreground">読み込み中...</p>}
+      {isLoading && (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Card key={i}>
+              <CardContent className="flex gap-3 p-4">
+                <Skeleton className="h-28 w-20 shrink-0 rounded" />
+                <div className="min-w-0 flex-1 space-y-2">
+                  <Skeleton className="h-4 w-4/5" />
+                  <Skeleton className="h-3.5 w-2/5" />
+                  <Skeleton className="h-3 w-3/5" />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
       {data && data.data.length === 0 && (
-        <p className="text-muted-foreground">まだ読み聞かせの記録がありません</p>
+        (childId || pictureBookId || dateFrom || dateTo) ? (
+          <EmptyState
+            message="条件に一致する記録がありません"
+            actionLabel="フィルターをクリア"
+            onAction={() => {
+              setChildId(undefined);
+              setPictureBookId(undefined);
+              setDateFrom('');
+              setDateTo('');
+              setPage(1);
+            }}
+          />
+        ) : (
+          <EmptyState
+            message="まだ読み聞かせの記録がありません"
+            actionLabel="記録をつける"
+            onAction={() => navigate('/records/new')}
+          />
+        )
       )}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

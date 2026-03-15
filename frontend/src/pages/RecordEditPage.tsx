@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useRecord, useUpdateRecord } from '../hooks/useRecords';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import RecordForm from '../components/RecordForm';
 
 export default function RecordEditPage() {
@@ -15,7 +16,17 @@ export default function RecordEditPage() {
   const updateRecord = useUpdateRecord(familyId, numericRecordId);
 
   if (isLoading) {
-    return <p className="text-muted-foreground">読み込み中...</p>;
+    return (
+      <div className="space-y-6">
+        <Skeleton className="h-8 w-24" />
+        <Skeleton className="h-8 w-40" />
+        <div className="space-y-4">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-24 w-full" />
+        </div>
+      </div>
+    );
   }
 
   if (!record) {

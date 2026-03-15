@@ -5,6 +5,7 @@ import { useBook, useUpdateBook, useRemoveBook } from '../hooks/useBooks';
 import { useRecords } from '../hooks/useRecords';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const STATUS_OPTIONS = [
   { label: '未読', value: 'unread' },
@@ -55,7 +56,25 @@ export default function BookDetailPage() {
   };
 
   if (isLoading) {
-    return <p className="text-muted-foreground">読み込み中...</p>;
+    return (
+      <div className="space-y-6">
+        <Skeleton className="h-8 w-24" />
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-3/5" />
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex flex-col gap-6 md:flex-row">
+              <Skeleton className="h-48 w-36 shrink-0 rounded" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-4 w-2/3" />
+                <Skeleton className="h-4 w-1/3" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   if (!book) {
@@ -73,7 +92,7 @@ export default function BookDetailPage() {
           <CardTitle>{book.title}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex gap-6">
+          <div className="flex flex-col gap-6 md:flex-row">
             {book.thumbnail_url ? (
               <img
                 src={book.thumbnail_url}

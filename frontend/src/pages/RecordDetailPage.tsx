@@ -3,6 +3,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useRecord, useDeleteRecord } from '../hooks/useRecords';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function RecordDetailPage() {
   const { recordId } = useParams<{ recordId: string }>();
@@ -22,7 +23,26 @@ export default function RecordDetailPage() {
   };
 
   if (isLoading) {
-    return <p className="text-muted-foreground">読み込み中...</p>;
+    return (
+      <div className="space-y-6">
+        <Skeleton className="h-8 w-24" />
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-2/5" />
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex flex-col gap-6 md:flex-row">
+              <Skeleton className="h-48 w-36 shrink-0 rounded" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-5 w-3/5" />
+                <Skeleton className="h-4 w-2/5" />
+                <Skeleton className="h-4 w-1/3" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   if (!record) {
@@ -40,7 +60,7 @@ export default function RecordDetailPage() {
           <CardTitle>読み聞かせ記録</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex gap-6">
+          <div className="flex flex-col gap-6 md:flex-row">
             {record.picture_book.thumbnail_url ? (
               <img
                 src={record.picture_book.thumbnail_url}
